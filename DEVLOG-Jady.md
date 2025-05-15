@@ -2,10 +2,10 @@
 
 This document must be updated daily every time you finish a work session.
 
-## Amy Smith CHANGE THE NAME FOOL!
+## Jady Lei CHANGE THE NAME FOOL!
 
-### 2024-01-02 - Brief description
-Expanded description including how much time was spent on task.
+### 2025-05-14 - Brief description
+Create to-do list for project.
 
-### 2024-01-03 - Brief description
-Expanded description including how much time was spent on task.
+### 2025-05-15 - Brief description
+research important commands to run.
