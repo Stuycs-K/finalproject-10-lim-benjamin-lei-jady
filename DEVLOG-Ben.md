@@ -11,5 +11,7 @@ Pulled repo, updated readme, looked into a [website](https://book.hacktricks.wik
 Looked into what it returns: info on system info, highlighting potential vulnerabilities.
 Wrote in doc about Processes, Cronjobs, Services
 
-### 2024-05-14 - Brief description
+### 2024-05-16 - Brief bash foray
+Created a bash script that took the output of ls -l and put it in a variable, made an if statement: learned some bash. As well we planned a bit for the steps of our project and format: main file and several diff checks.
 
+### 2024-05-16 - Brief description
