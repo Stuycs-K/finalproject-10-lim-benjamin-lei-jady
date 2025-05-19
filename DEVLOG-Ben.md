@@ -16,3 +16,6 @@ Created a bash script that took the output of ls -l and put it in a variable, ma
 
 ### 2024-05-18 - Added to Planning Doc
 Added code and planned structure for Timers, Users, and Networks information gathering.
+
+### 2024-05-19 - Pair programming on getting system info
+Grabbed a bunch of env data into variables using bash in test.sh.
