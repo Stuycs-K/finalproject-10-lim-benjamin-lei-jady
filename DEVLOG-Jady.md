@@ -16,3 +16,7 @@ figure out how we want the program to work. ex: language, logic
 
 ### 2025-05-19 - First Steps
 pair programming.
+
+### 2025-05-20 - Studying the Original
+ran linpeas on softdev digital ocean vm to see the full output of a particularly questionably secured server running machine.  
+figure out colors for a bash script
