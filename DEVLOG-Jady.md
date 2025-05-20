@@ -13,3 +13,6 @@ System information, Writable files, interesting files, SSH, and Open Shell sessi
 
 ### 2025-05-16 - Strategy Meeting
 figure out how we want the program to work. ex: language, logic
+
+### 2025-05-19 - First Steps
+pair programming.
