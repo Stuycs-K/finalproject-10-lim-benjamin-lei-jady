@@ -14,4 +14,8 @@ Wrote in doc about Processes, Cronjobs, Services
 ### 2024-05-16 - Brief bash foray
 Created a bash script that took the output of ls -l and put it in a variable, made an if statement: learned some bash. As well we planned a bit for the steps of our project and format: main file and several diff checks.
 
-### 2024-05-16 - Brief description
+### 2024-05-18 - Added to Planning Doc
+Added code and planned structure for Timers, Users, and Networks information gathering.
+
+### 2024-05-19 - Pair programming on getting system info
+Grabbed a bunch of env data into variables using bash in test.sh.
