@@ -10,14 +10,27 @@ getuserinfo () {
   Hardware=$(uname -i)
   printf "User: $User;\nMachine: $Machine;\nOS: $OS;\nKernel: $Kernel;\nHardware: $Hardware;\n"
 
-  env=$(env)
+  # env=$(env)
   Logname=$(env | grep -E "^LOGNAME")
   Logname=${Logname:8}
-  PWD=$(env | grep -E "^PWD" | tr -d "PWD=")
-  Home=$(env | grep -E "^HOME" | tr -d "HOME=")
+  PWD=$(env | grep -E "^PWD" | sed -E "s/PWD=//")
+  Home=$(env | grep -E "^HOME" | sed -E "s/HOME=//")
   echo $Logname
   # echo ${Logname}
   echo $PWD
   echo $Home
 }
-getuserinfo
+# getuserinfo
+
+Path=""
+vulnpaths=("/home/user", "/usr/bin/bash")
+getpath () {
+  Pathlen=$(echo $PATH | tr ":" "\n" | wc -l)
+  Path=$(echo $PATH | tr ":" "   ")
+  echo $Path
+  # separate and test each folder
+  # for folder in Path check if in vulnpaths
+  # loop colon
+  # while [  ]
+}
+getpath
