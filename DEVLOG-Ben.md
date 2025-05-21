@@ -20,3 +20,8 @@ Added code and planned structure for Timers, Users, and Networks information gat
 ### 2024-05-19 - Pair programming on getting system info
 Grabbed a bunch of env data into variables using bash in test.sh.
 Watched [video](https://asciinema.org/a/309566) that showed the process of linpeas: it prints a whole lot of stuff w colorcoding for key names and highlights for potential vulnerabilities. Mostly keeps command input intact. The difficult part is definitely going to be writing the logic and conditions for the highlights.
+
+### 2024-05-20 Working with path
+Added code to echo path and pseudocoded a way to split the folders by colon, followed by checking if the given folder was vulnerable.
+
+### 2024-05-19 - Pair programming on getting system info
