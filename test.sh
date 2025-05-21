@@ -29,12 +29,24 @@ getuserinfo () {
   Logname=${Logname:8}
   PWD=$(env | grep -E "^PWD" | sed -E "s/PWD=//")
   Home=$(env | grep -E "^HOME" | sed -E "s/HOME=//")
-  echo $Logname
+  # echo $Logname
   # echo ${Logname}
-  echo $PWD
-  echo $Home
+  # echo $PWD
+  # echo $Home
 }
 # getuserinfo
+
+applycolor () {
+  # $1 is the word
+  # $2 is the total string
+  # $3 is the color
+  echo $1
+  echo $2
+  echo -n $2 | sed -E "s/$1.*//g"
+  echo -n -e $3$1${reset}
+  echo -n $2 | sed -E "s/.*$1//g"
+}
+applycolor "help" "oh god please help me" ${blue}
 
 Path=""
 vulnpaths=("/home/user", "/usr/bin/bash")
@@ -47,4 +59,4 @@ getpath () {
   # loop colon
   # while [  ]
 }
-getpath
+# getpath

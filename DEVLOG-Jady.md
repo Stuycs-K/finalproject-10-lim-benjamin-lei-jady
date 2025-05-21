@@ -20,3 +20,6 @@ pair programming.
 ### 2025-05-20 - Studying the Original
 ran linpeas on softdev digital ocean vm to see the full output of a particularly questionably secured server running machine.  
 figure out colors for a bash script
+
+### 2025-05-20 - Studying the Original
+try to get specific words to be colored within text.
