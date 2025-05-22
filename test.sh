@@ -47,16 +47,27 @@ applycolor () {
   echo -n $2 | sed -E "s/.*$1//g"
 }
 applycolor "help" "oh god please help me" ${blue}
+printf \\n
 
 Path=""
 vulnpaths=("/home/user", "/usr/bin/bash")
 getpath () {
-  Pathlen=$(echo $PATH | tr ":" "\n" | wc -l)
-  Path=$(echo $PATH | tr ":" "   ")
+  Pathct=$(echo $PATH | tr ":" "\n" | wc -l)
+  Pathlen=$(echo $PATH | wc -c) # is that extra \n a problem???
+  Path=$(echo $PATH)
+  # Path=$(echo $PATH | tr ":" "   ")
   echo $Path
   # separate and test each folder
   # for folder in Path check if in vulnpaths
   # loop colon
-  # while [  ]
+  currentind=0
+  pathschecked=0
+  until [ $pathschecked -eq $Pathct ]
+  do
+    echo $pathschecked
+    # instead of echo here we grab the folder, then echo -n it; if in vuln paths then change the color too
+    ((pathschecked++))
+  done
+
 }
-# getpath
+getpath

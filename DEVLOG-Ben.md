@@ -24,4 +24,7 @@ Watched [video](https://asciinema.org/a/309566) that showed the process of linpe
 ### 2024-05-20 Working with path
 Added code to echo path and pseudocoded a way to split the folders by colon, followed by checking if the given folder was vulnerable.
 
+### 2024-05-21 Working more with path
+Wrote part of the while loop, next step is to use string indices to grab the folder names and then check against a list of vulnerable folders.
+
 ### 2024-05-19 - Pair programming on getting system info
