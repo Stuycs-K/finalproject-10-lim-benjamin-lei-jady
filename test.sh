@@ -40,15 +40,29 @@ getuserinfo () {
 
 Path=""
 vulnpaths=("/home/user", "/usr/bin/bash")
+ispathinlist () { # arg1 is vulnpaths, arg2 is folder
+  len=${#1}
+  finished="f"
+  for i in {0..$len}
+  do
+    if [ $1[i] = $2 ]; then
+      finished="t"
+      break
+    fi
+  done
+  return $finished
+}
+
 getpath () {
   Pathct=$(echo $PATH | tr ":" "\n" | wc -l)
-  Pathlen=$(echo $PATH | wc -c) # is that extra \n a problem???
   Path=$(echo $PATH)
+  Pathlen=${#Path}
   # Path=$(echo $PATH | tr ":" "   ")
   # echo $Path
   # separate and test each folder
   # for folder in Path check if in vulnpaths
   # loop colon
+  # echo $Pathlen
   currentind=0
   pathschecked=0
   until [ $pathschecked -eq $Pathct ]
@@ -60,16 +74,22 @@ getpath () {
     while [ $go = "t" ]
     do
       # echo $currentfolderlen
-      curr=${Path:currentind:5}
-      if [ $currentfolderlen -eq 5 ]; then
+      realindex=$(($currentind + $currentfolderlen)) # index we're checking
+      curr=${Path:realindex:1} # substring 1
+      
+      if [ "$curr" = ":" ] || [ $realindex -eq $Pathlen ]; then # true when end of folder name
         # echo $currentfolderlen
         go="f"
-        echo $curr
+        currentfolder=${Path:currentind:currentfolderlen} # export each to list?
+        echo $currentfolder
+        # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
+        ## pick up here _____
       fi
+      
       currentfolderlen=$(($currentfolderlen+1))
     done
     ((pathschecked++))
-    ((currentind+=5))
+    ((currentind+=currentfolderlen))
     # let "currentind=currentind + 5"
   done
 
