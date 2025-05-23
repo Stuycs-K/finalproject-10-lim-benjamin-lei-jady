@@ -76,16 +76,17 @@ getpath () {
       # echo $currentfolderlen
       realindex=$(($currentind + $currentfolderlen)) # index we're checking
       curr=${Path:realindex:1} # substring 1
-      
+
       if [ "$curr" = ":" ] || [ $realindex -eq $Pathlen ]; then # true when end of folder name
         # echo $currentfolderlen
         go="f"
         currentfolder=${Path:currentind:currentfolderlen} # export each to list?
         echo $currentfolder
         # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
-        ## pick up here _____
+        ## pick up here -- check writable
+
       fi
-      
+
       currentfolderlen=$(($currentfolderlen+1))
     done
     ((pathschecked++))
