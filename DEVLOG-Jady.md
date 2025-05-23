@@ -24,5 +24,8 @@ figure out colors for a bash script
 ### 2025-05-21 - targeted coloring
 try to get specific words to be colored within text.
 
-### 2025-05-21 - the bones
+### 2025-05-22 - the bones
 Write out outline of program. Haunting how much we have to do.
+
+### 2025-05-23
+Interesting/writable files
