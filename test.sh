@@ -1,20 +1,23 @@
 #!/bin/bash
 red="\e[0;91m"
 blue="\e[0;94m"
-expand_bg="\e[K"
-blue_bg="\e[0;104m${expand_bg}"
-red_bg="\e[0;101m${expand_bg}"
-green_bg="\e[0;102m${expand_bg}"
 green="\e[0;92m"
 white="\e[0;97m"
+yellow="\e[0;33m"
+purple="\e[0;35m"
+cyan="\e[0;36m"
 bold="\e[1m"
 uline="\e[4m"
 reset="\e[0m"
 
-echo -e "${red}ln ${blue}peas${reset}"
-
-arr=()
-User=""
+applycolor () {
+  # $1 is the word
+  # $2 is the total string
+  # $3 is the color
+  echo -n $2 | sed -E "s/$1.*//g"
+  echo -n -e $3$1${reset}
+  echo $2 | sed -E "s/.*$1//g"
+}
 
 getuserinfo () {
   User=$(uname -n)
@@ -34,20 +37,6 @@ getuserinfo () {
   # echo $PWD
   # echo $Home
 }
-# getuserinfo
-
-applycolor () {
-  # $1 is the word
-  # $2 is the total string
-  # $3 is the color
-  echo $1
-  echo $2
-  echo -n $2 | sed -E "s/$1.*//g"
-  echo -n -e $3$1${reset}
-  echo -n $2 | sed -E "s/.*$1//g"
-}
-applycolor "help" "oh god please help me" ${blue}
-printf \\n
 
 Path=""
 vulnpaths=("/home/user", "/usr/bin/bash")
@@ -70,4 +59,108 @@ getpath () {
   done
 
 }
+
+getDrives () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getSoftware () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getProcesses () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getCronjobs () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getServices () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getTimers () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getNetwork () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getUsers () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getSudoSUID () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getCapabilities () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getShellSessions () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getSSH () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getInterestingFiles () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+getWritableFiles () {
+  applycolor "progress" "work in progress" ${purple}
+}
+
+# PROGRAM START
+echo -e "${red}ln ${blue}peas${reset}"
+
+echo -e "${red}============ ${blue}System Information ${red}============${reset}"
+getuserinfo
 getpath
+
+echo -e "${red}============ ${blue}Drives ${red}============${reset}"
+getDrives
+
+echo -e "${red}============ ${blue}Installed Software ${red}============${reset}"
+getSoftware
+
+echo -e "${red}============ ${blue}Processes ${red}============${reset}"
+getProcesses
+
+echo -e "${red}============ ${blue}Scheduled/Cron jobs ${red}============${reset}"
+getCronjobs
+
+echo -e "${red}============ ${blue}Services ${red}============${reset}"
+getServices
+
+echo -e "${red}============ ${blue}Timers ${red}============${reset}"
+getTimers
+
+echo -e "${red}============ ${blue}Network ${red}============${reset}"
+getNetwork
+
+echo -e "${red}============ ${blue}Users ${red}============${reset}"
+getUsers
+
+echo -e "${red}============ ${blue}SUDO and SUID commands${red}============${reset}"
+getSudoSUID
+
+echo -e "${red}============ ${blue}Capabilities ${red}============${reset}"
+getCapabilities
+
+echo -e "${red}============ ${blue}Open Shell Sessions ${red}============${reset}"
+getShellSessions
+
+echo -e "${red}============ ${blue}SSH ${red}============${reset}"
+getSSH
+
+echo -e "${red}============ ${blue}Interesting Files ${red}============${reset}"
+getInterestingFiles
+
+echo -e "${red}============ ${blue}Writable Files ${red}============${reset}"
+getWritableFiles
