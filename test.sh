@@ -45,7 +45,7 @@ getpath () {
   Pathlen=$(echo $PATH | wc -c) # is that extra \n a problem???
   Path=$(echo $PATH)
   # Path=$(echo $PATH | tr ":" "   ")
-  echo $Path
+  # echo $Path
   # separate and test each folder
   # for folder in Path check if in vulnpaths
   # loop colon
@@ -54,8 +54,23 @@ getpath () {
   until [ $pathschecked -eq $Pathct ]
   do
     echo $pathschecked
+    currentfolderlen=0
     # instead of echo here we grab the folder, then echo -n it; if in vuln paths then change the color too
+    go="t"
+    while [ $go = "t" ]
+    do
+      # echo $currentfolderlen
+      curr=${Path:currentind:5}
+      if [ $currentfolderlen -eq 5 ]; then
+        # echo $currentfolderlen
+        go="f"
+        echo $curr
+      fi
+      currentfolderlen=$(($currentfolderlen+1))
+    done
     ((pathschecked++))
+    ((currentind+=5))
+    # let "currentind=currentind + 5"
   done
 
 }
