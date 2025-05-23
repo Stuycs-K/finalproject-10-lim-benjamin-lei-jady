@@ -19,6 +19,23 @@ applycolor () {
   echo $2 | sed -E "s/.*$1//g"
 }
 
+checkpermissions () {
+  # $1 is the absolute file/directory path
+  file=$"ls -ld $1"
+  if [[ "$1" =~ ^.{7}r.* ]]; then
+    echo -n "readable"
+  fi
+  if [[ "$1" =~ ^.{8}w.* ]]; then
+    echo -n "writable"
+  fi
+  if [[ "$1" =~ ^.{9}x.* ]]; then
+    echo -n "excecutable"
+  fi
+  echo
+}
+checkpermissions ""
+checkpermissions ""
+
 getuserinfo () {
   User=$(uname -n)
   Machine=$(uname -m)
@@ -97,103 +114,109 @@ getpath () {
 }
 
 getDrives () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getSoftware () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getProcesses () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getCronjobs () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getServices () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getTimers () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getNetwork () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getUsers () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getSudoSUID () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getCapabilities () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getShellSessions () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getSSH () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getInterestingFiles () {
-  applycolor "progress" "work in progress" ${purple}
+  test=$(ls -l /etc/profile /etc/profile.d/)
+
+  test=$(cat /etc/shadow /etc/shadow- /etc/shadow~ /etc/gshadow /etc/gshadow- /etc/master.passwd /etc/spwd.db /etc/security/opasswd 2>/dev/null)
+  if [[ "${#test}" != 0 ]]; then
+    echo "shadow/password files are readable"
+  fi
+  applycolor "progress" "work in progress" ${bold}
 }
 
 getWritableFiles () {
-  applycolor "progress" "work in progress" ${purple}
+  applycolor "progress" "work in progress" ${bold}
 }
 
 # PROGRAM START
 echo -e "${red}ln ${blue}peas${reset}"
 
-echo -e "${red}============ ${blue}System Information ${red}============${reset}"
-getuserinfo
-getpath
+# echo -e "${red}============ ${blue}System Information ${red}============${reset}"
+# getuserinfo
+# getpath
+#
+# echo -e "${red}============ ${blue}Drives ${red}============${reset}"
+# getDrives
 
-echo -e "${red}============ ${blue}Drives ${red}============${reset}"
-getDrives
-
-echo -e "${red}============ ${blue}Installed Software ${red}============${reset}"
-getSoftware
-
-echo -e "${red}============ ${blue}Processes ${red}============${reset}"
-getProcesses
-
-echo -e "${red}============ ${blue}Scheduled/Cron jobs ${red}============${reset}"
-getCronjobs
-
-echo -e "${red}============ ${blue}Services ${red}============${reset}"
-getServices
-
-echo -e "${red}============ ${blue}Timers ${red}============${reset}"
-getTimers
-
-echo -e "${red}============ ${blue}Network ${red}============${reset}"
-getNetwork
-
-echo -e "${red}============ ${blue}Users ${red}============${reset}"
-getUsers
-
-echo -e "${red}============ ${blue}SUDO and SUID commands${red}============${reset}"
-getSudoSUID
-
-echo -e "${red}============ ${blue}Capabilities ${red}============${reset}"
-getCapabilities
-
-echo -e "${red}============ ${blue}Open Shell Sessions ${red}============${reset}"
-getShellSessions
-
-echo -e "${red}============ ${blue}SSH ${red}============${reset}"
-getSSH
+# echo -e "${red}============ ${blue}Installed Software ${red}============${reset}"
+# getSoftware
+#
+# echo -e "${red}============ ${blue}Processes ${red}============${reset}"
+# getProcesses
+#
+# echo -e "${red}============ ${blue}Scheduled/Cron jobs ${red}============${reset}"
+# getCronjobs
+#
+# echo -e "${red}============ ${blue}Services ${red}============${reset}"
+# getServices
+#
+# echo -e "${red}============ ${blue}Timers ${red}============${reset}"
+# getTimers
+#
+# echo -e "${red}============ ${blue}Network ${red}============${reset}"
+# getNetwork
+#
+# echo -e "${red}============ ${blue}Users ${red}============${reset}"
+# getUsers
+#
+# echo -e "${red}============ ${blue}SUDO and SUID commands${red}============${reset}"
+# getSudoSUID
+#
+# echo -e "${red}============ ${blue}Capabilities ${red}============${reset}"
+# getCapabilities
+#
+# echo -e "${red}============ ${blue}Open Shell Sessions ${red}============${reset}"
+# getShellSessions
+#
+# echo -e "${red}============ ${blue}SSH ${red}============${reset}"
+# getSSH
 
 echo -e "${red}============ ${blue}Interesting Files ${red}============${reset}"
 getInterestingFiles
