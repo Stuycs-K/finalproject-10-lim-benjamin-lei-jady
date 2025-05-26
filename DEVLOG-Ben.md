@@ -33,7 +33,7 @@ Using a lot of variables for indexing, got to the point where I loop through eac
 ### 2024-05-23 Finding conditions for path being vulnerable
 Looking into tryhackme room for path to see what conditions need to be true. It is that the folder is in $PATH and writable: would then make an executable (e.g. for priv esc to root) + set SUID bit. Need to check if a folder writable to everyone but owned by my acct for example is a vulnerable or if it needs to be owned by root.
 
-### 2024-05-25 Finishing up path
-Fixed checkpermissions syntax but it's not super useful on my device because I own the files and so the permissions for others are not set. Some reason when I tried to change permissions for testing reasons it didn't work.
+### 2024-05-25 Updating functions, ready to finish path
+Fixed checkpermissions syntax but it's not super useful on my device because I own the files and so the permissions for others are not set. Some reason when I tried to change permissions for testing reasons it didn't work. Trying to look for files owned by root as those would be the vulnerable ones, but can't get the regex to work. Attempt: `ls -ld /etc/ | sed -E 's/^(\w|-)+\s+\d+\s+(\w+).*$/\2/'`. Success: `ls -ld /etc/ | sed -E 's/^[drwx-]+[\r\n\t\f\v ]+[0-9]+[\r\n\t\f\v ]+([a-zA-Z0-9]+).*$/\1/'`. At this point I have code to get the root user in getuserinfo and should be able to check if a folder is vulnerable via path if it 1) is owned by root (check with `stat`), 2) is writable by everyone, and 3) is on the $PATH.
 
 ### 2024-05-19 - Pair programming on getting system info

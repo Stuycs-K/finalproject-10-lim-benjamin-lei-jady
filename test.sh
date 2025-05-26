@@ -40,13 +40,15 @@ checkpermissions () {
 checkpermissions "../finalproject/"
 checkpermissions ""
 
+Rootuser="root"
 getuserinfo () {
   User=$(uname -n)
   Machine=$(uname -m)
   OS=$(uname -o)
   Kernel=$(uname -sr)
   Hardware=$(uname -i)
-  printf "User: $User;\nMachine: $Machine;\nOS: $OS;\nKernel: $Kernel;\nHardware: $Hardware;\n"
+  Rootuser=$(ls -ld /etc/ | sed -E 's/^[drwx-]+[\r\n\t\f\v ]+[0-9]+[\r\n\t\f\v ]+([a-zA-Z0-9]+).*$/\1/') #owner of /etc/ which should be root perms
+  printf "User: $User;\nMachine: $Machine;\nOS: $OS;\nKernel: $Kernel;\nHardware: $Hardware;\nRootuser: $Rootuser;\n"
 
   # env=$(env)
   Logname=$(env | grep -E "^LOGNAME")
@@ -88,7 +90,7 @@ getpath () {
   pathschecked=0
   until [ $pathschecked -eq $Pathct ]
   do
-    echo $pathschecked
+    # echo $pathschecked
     currentfolderlen=0
     # instead of echo here we grab the folder, then echo -n it; if in vuln paths then change the color too
     go="t"
@@ -105,7 +107,7 @@ getpath () {
         echo $currentfolder
         # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
         ## pick up here -- check writable
-
+        
       fi
 
       currentfolderlen=$(($currentfolderlen+1))
@@ -182,9 +184,9 @@ getWritableFiles () {
 # PROGRAM START
 echo -e "${red}ln ${blue}peas${reset}"
 
-# echo -e "${red}============ ${blue}System Information ${red}============${reset}"
-# getuserinfo
-# getpath
+echo -e "${red}============ ${blue}System Information ${red}============${reset}"
+getuserinfo
+getpath
 #
 # echo -e "${red}============ ${blue}Drives ${red}============${reset}"
 # getDrives
