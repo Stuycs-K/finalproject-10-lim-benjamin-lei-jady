@@ -30,7 +30,10 @@ Wrote part of the while loop, next step is to use string indices to grab the fol
 ### 2024-05-22 Working more with path (coding in bash is pain)
 Using a lot of variables for indexing, got to the point where I loop through each of the folders in $PATH w their names: need to check them against a list now -- made a function (folderlist, folder) to do so
 
-### 2024-05-23
+### 2024-05-23 Finding conditions for path being vulnerable
 Looking into tryhackme room for path to see what conditions need to be true. It is that the folder is in $PATH and writable: would then make an executable (e.g. for priv esc to root) + set SUID bit. Need to check if a folder writable to everyone but owned by my acct for example is a vulnerable or if it needs to be owned by root.
+
+### 2024-05-25 Finishing up path
+Fixed checkpermissions syntax but it's not super useful on my device because I own the files and so the permissions for others are not set. Some reason when I tried to change permissions for testing reasons it didn't work.
 
 ### 2024-05-19 - Pair programming on getting system info

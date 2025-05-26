@@ -21,19 +21,23 @@ applycolor () {
 
 checkpermissions () {
   # $1 is the absolute file/directory path
-  file=$"ls -ld $1"
+  file=$(ls -ld $1)
+  echo $file
+  read="-"
+  wr="-"
+  ex="-"
   if [[ "$1" =~ ^.{7}r.* ]]; then
-    echo -n "readable"
+    read="r"
   fi
   if [[ "$1" =~ ^.{8}w.* ]]; then
-    echo -n "writable"
+    wr="w"
   fi
   if [[ "$1" =~ ^.{9}x.* ]]; then
-    echo -n "excecutable"
+    ex="x"
   fi
-  echo
+  echo "$read$wr$ex"
 }
-checkpermissions ""
+checkpermissions "../finalproject/"
 checkpermissions ""
 
 getuserinfo () {
