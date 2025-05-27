@@ -18,6 +18,9 @@ applycolor () {
   echo -n -e $3$1${reset}
   echo $2 | sed -E "s/.*$1//g"
 }
+formatFindResult () {
+  echo $1 | sed "s/ /\n\t/g"
+}
 
 checkpermissions () {
   # $1 is the absolute file/directory path
@@ -37,8 +40,6 @@ checkpermissions () {
   fi
   echo "$read$wr$ex"
 }
-checkpermissions "../finalproject/"
-checkpermissions ""
 
 Rootuser="root"
 getuserinfo () {
@@ -162,7 +163,7 @@ getNetwork () {
   do
     text=$(cat $fname 2>/dev/null)
     if [ ! $text = "" ]; then
-      
+
     fi
   done
 
@@ -196,7 +197,6 @@ getSudoSUID () {
 getCapabilities () {
   applycolor "progress" "work in progress" ${bold}
 }
-
 getShellSessions () {
   applycolor "progress" "work in progress" ${bold}
 }
@@ -240,30 +240,35 @@ getInterestingFiles () {
 
   echo "recently modified files:"
   test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
-    echo "no SQLite db files found"
+    echo "no recently modified files found"
   fi
   echo "SQLite db files:"
   test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no SQLite db files found"
   fi
   echo "hidden files:"
-  test=$(find / -type f -iname ".*" -ls 2>/dev/null)
-  echo $test
+  test=$(find / -type f -iname ".*" 2>/dev/null)
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no hidden files found"
   fi
   echo "webfiles:"
+  test=""
   for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
   do
     ls -alhR ${fname} 2>/dev/null
+    test+="$(ls -alhR ${fname} 2>/dev/null)"
   done
+  if [[ ${#test} == 0 ]]; then
+    echo "no webfiles files found"
+  fi
   echo "backup files:"
   test=$(find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no backup files found"
   fi
