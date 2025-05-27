@@ -106,14 +106,14 @@ getpath () {
         currentfolder=${Path:currentind:currentfolderlen} # export each to list?
         # echo $currentfolder # we have the folder at this point
         # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
-        # check owner: 
+        # check owner:
         ocheck=$(stat /etc/ | grep -E $Rootuser) # if owner rootuser then returns line starting w "Access"
         # check writable
         wrcheck=""
 
-        if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser 
+        if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser
           wrcheck=$(checkpermissions $currentfolder)
-          wrcheck=${wrcheck:1:1} # rwx or smth like r-- 
+          wrcheck=${wrcheck:1:1} # rwx or smth like r--
         fi
 
         if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
@@ -156,6 +156,32 @@ getTimers () {
 }
 
 getNetwork () {
+#Hostname, hosts and DNS
+  lst=("/etc/hostname" "/etc/hosts" "/etc/resolv.conf" "/etc/inetd.conf" "/etc/xinetd.conf")
+  for fname in lst
+  do
+    text=$(cat $fname 2>/dev/null)
+    if [ ! $text = "" ]; then
+      
+    fi
+  done
+
+  dnsdomainname
+  #Content of /etc/inetd.conf & /etc/xinetd.conf
+
+  #Interfaces
+  cat /etc/networks
+  (ifconfig || ip a)
+
+  #Neighbours
+  (arp -e || arp -a)
+  (route || ip n)
+
+  #Iptables rules
+  (timeout 1 iptables -L 2>/dev/null; cat /etc/iptables/* | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null)
+
+  #Files used by network services
+  lsof -i
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -181,55 +207,55 @@ getSSH () {
 
 getInterestingFiles () {
   for fname in "/etc/profile" "/etc/profile" "/etc/passwd"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:1:1} == 'w' ]]; then
       echo -e "Profile File: ${fname} is ${red}writable${reset}"
     fi
-  done 
+  done
 
   for fname in "/etc/shadow" "/etc/shadow-" "/etc/shadow~" "/etc/gshadow" "/etc/gshadow-" "/etc/master.passwd" "/etc/spwd.db" "/etc/security/opasswd"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Profile File: ${fname} is ${yellow}readable${yellow}"
     fi
-  done 
+  done
 
   for fname in "/etc/passwd" "/etc/pwd.db" "/etc/master.passwd" "/etc/group"
-  do 
+  do
     test=$(grep -v '^[^:]*:[x\*]' "$fname" 2>/dev/null)
     if [[ ${#test} > 0 ]]; then
       echo -e "Password File: ${fname} has ${red}readable hashes${reset}"
     fi
-  done 
+  done
 
   for fname in "/tmp" "/var/tmp" "/var/backups" "/var/mail/" "/var/spool/mail/" "/root"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Folder: ${fname} is ${yellow}readable${reset}"
     fi
-  done 
+  done
 
   echo "recently modified files:"
   test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
   echo $test
   if [[ ${#test} == 0 ]]; then
     echo "no SQLite db files found"
-  fi 
+  fi
   echo "SQLite db files:"
   test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
   echo $test
   if [[ ${#test} == 0 ]]; then
     echo "no SQLite db files found"
-  fi 
+  fi
   echo "hidden files:"
   test=$(find / -type f -iname ".*" -ls 2>/dev/null)
   echo $test
   if [[ ${#test} == 0 ]]; then
     echo "no hidden files found"
-  fi 
+  fi
   echo "webfiles:"
   for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
   do
@@ -240,9 +266,9 @@ getInterestingFiles () {
   echo $test
   if [[ ${#test} == 0 ]]; then
     echo "no backup files found"
-  fi 
+  fi
   for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Shell File: ${fname} is ${red}readable${reset}"
@@ -250,7 +276,7 @@ getInterestingFiles () {
     if [[ ${test:1:1} == 'w' ]]; then
       echo -e "Shell File: ${fname} is ${red}writable${reset}"
     fi
-  done 
+  done
 
   applycolor "progress" "work in progress" ${bold}
 }
@@ -284,8 +310,8 @@ getpath
 # echo -e "${green}============ ${blue}Timers ${green}============${reset}"
 # getTimers
 #
-# echo -e "${green}============ ${blue}Network ${green}============${reset}"
-# getNetwork
+echo -e "${green}============ ${blue}Network ${green}============${reset}"
+getNetwork
 #
 # echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers
@@ -302,8 +328,8 @@ getpath
 # echo -e "${green}============ ${blue}SSH ${green}============${reset}"
 # getSSH
 
-echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-getInterestingFiles
-
-echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-getWritableFiles
+# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+# getInterestingFiles
+#
+# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+# getWritableFiles
