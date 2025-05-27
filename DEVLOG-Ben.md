@@ -21,19 +21,22 @@ Added code and planned structure for Timers, Users, and Networks information gat
 Grabbed a bunch of env data into variables using bash in test.sh.
 Watched [video](https://asciinema.org/a/309566) that showed the process of linpeas: it prints a whole lot of stuff w colorcoding for key names and highlights for potential vulnerabilities. Mostly keeps command input intact. The difficult part is definitely going to be writing the logic and conditions for the highlights.
 
-### 2024-05-20 Working with path
+### 2024-05-20 - Working with path
 Added code to echo path and pseudocoded a way to split the folders by colon, followed by checking if the given folder was vulnerable.
 
-### 2024-05-21 Working more with path
+### 2024-05-21 - Working more with path
 Wrote part of the while loop, next step is to use string indices to grab the folder names and then check against a list of vulnerable folders.
 
-### 2024-05-22 Working more with path (coding in bash is pain)
+### 2024-05-22 - Working more with path (coding in bash is pain)
 Using a lot of variables for indexing, got to the point where I loop through each of the folders in $PATH w their names: need to check them against a list now -- made a function (folderlist, folder) to do so
 
-### 2024-05-23 Finding conditions for path being vulnerable
+### 2024-05-23 - Finding conditions for path being vulnerable
 Looking into tryhackme room for path to see what conditions need to be true. It is that the folder is in $PATH and writable: would then make an executable (e.g. for priv esc to root) + set SUID bit. Need to check if a folder writable to everyone but owned by my acct for example is a vulnerable or if it needs to be owned by root.
 
-### 2024-05-25 Updating functions, ready to finish path
+### 2024-05-25 - Updating functions, ready to finish path
 Fixed checkpermissions syntax but it's not super useful on my device because I own the files and so the permissions for others are not set. Some reason when I tried to change permissions for testing reasons it didn't work. Trying to look for files owned by root as those would be the vulnerable ones, but can't get the regex to work. Attempt: `ls -ld /etc/ | sed -E 's/^(\w|-)+\s+\d+\s+(\w+).*$/\2/'`. Success: `ls -ld /etc/ | sed -E 's/^[drwx-]+[\r\n\t\f\v ]+[0-9]+[\r\n\t\f\v ]+([a-zA-Z0-9]+).*$/\1/'`. At this point I have code to get the root user in getuserinfo and should be able to check if a folder is vulnerable via path if it 1) is owned by root (check with `stat`), 2) is writable by everyone, and 3) is on the $PATH.
+
+### 2024-05-26 - Finished path
+If a folder is in path, owned by the root user, and writable by everyone, it'll be orange. In theory at least, because none of my folders are writable by everyone.
 
 ### 2024-05-19 - Pair programming on getting system info

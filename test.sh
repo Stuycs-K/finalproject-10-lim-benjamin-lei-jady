@@ -104,10 +104,22 @@ getpath () {
         # echo $currentfolderlen
         go="f"
         currentfolder=${Path:currentind:currentfolderlen} # export each to list?
-        echo $currentfolder
+        # echo $currentfolder # we have the folder at this point
         # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
-        ## pick up here -- check writable
-        
+        # check owner: 
+        ocheck=$(stat /etc/ | grep -E $Rootuser) # if owner rootuser then returns line starting w "Access"
+        # check writable
+        wrcheck=""
+
+        if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser 
+          wrcheck=$(checkpermissions $currentfolder)
+          wrcheck=${wrcheck:1:1} # rwx or smth like r-- 
+        fi
+
+        if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
+          currentfolder=$(applycolor $currentfolder $currentfolder "orange")
+        fi
+        echo $currentfolder
       fi
 
       currentfolderlen=$(($currentfolderlen+1))
