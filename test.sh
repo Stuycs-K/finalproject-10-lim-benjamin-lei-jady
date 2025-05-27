@@ -21,7 +21,7 @@ applycolor () {
 
 checkpermissions () {
   # $1 is the absolute file/directory path
-  file=$(ls -ld $1)
+  file=$(ls -ld $1 2>/dev/null)
   echo $file
   read="-"
   wr="-"
@@ -180,12 +180,78 @@ getSSH () {
 }
 
 getInterestingFiles () {
-  test=$(ls -l /etc/profile /etc/profile.d/)
+  for fname in "/etc/profile" "/etc/profile" "/etc/passwd"
+  do 
+    test=$(checkpermissions "$fname")
+    if [[ ${test:1:1} == 'w' ]]; then
+      echo -e "Profile File: ${fname} is ${red}writable${reset}"
+    fi
+  done 
 
-  test=$(cat /etc/shadow /etc/shadow- /etc/shadow~ /etc/gshadow /etc/gshadow- /etc/master.passwd /etc/spwd.db /etc/security/opasswd 2>/dev/null)
-  if [[ "${#test}" != 0 ]]; then
-    echo "shadow/password files are readable"
-  fi
+  for fname in "/etc/shadow" "/etc/shadow-" "/etc/shadow~" "/etc/gshadow" "/etc/gshadow-" "/etc/master.passwd" "/etc/spwd.db" "/etc/security/opasswd"
+  do 
+    test=$(checkpermissions "$fname")
+    if [[ ${test:0:1} == 'r' ]]; then
+      echo -e "Profile File: ${fname} is ${yellow}readable${yellow}"
+    fi
+  done 
+
+  for fname in "/etc/passwd" "/etc/pwd.db" "/etc/master.passwd" "/etc/group"
+  do 
+    test=$(grep -v '^[^:]*:[x\*]' "$fname" 2>/dev/null)
+    if [[ ${#test} > 0 ]]; then
+      echo -e "Password File: ${fname} has ${red}readable hashes${reset}"
+    fi
+  done 
+
+  for fname in "/tmp" "/var/tmp" "/var/backups" "/var/mail/" "/var/spool/mail/" "/root"
+  do 
+    test=$(checkpermissions "$fname")
+    if [[ ${test:0:1} == 'r' ]]; then
+      echo -e "Folder: ${fname} is ${yellow}readable${reset}"
+    fi
+  done 
+
+  echo "recently modified files:"
+  test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
+  echo $test
+  if [[ ${#test} == 0 ]]; then
+    echo "no SQLite db files found"
+  fi 
+  echo "SQLite db files:"
+  test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
+  echo $test
+  if [[ ${#test} == 0 ]]; then
+    echo "no SQLite db files found"
+  fi 
+  echo "hidden files:"
+  test=$(find / -type f -iname ".*" -ls 2>/dev/null)
+  echo $test
+  if [[ ${#test} == 0 ]]; then
+    echo "no hidden files found"
+  fi 
+  echo "webfiles:"
+  for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
+  do
+    ls -alhR ${fname} 2>/dev/null
+  done
+  echo "backup files:"
+  test=$(find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null)
+  echo $test
+  if [[ ${#test} == 0 ]]; then
+    echo "no backup files found"
+  fi 
+  for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
+  do 
+    test=$(checkpermissions "$fname")
+    if [[ ${test:0:1} == 'r' ]]; then
+      echo -e "Shell File: ${fname} is ${red}readable${reset}"
+    fi
+    if [[ ${test:1:1} == 'w' ]]; then
+      echo -e "Shell File: ${fname} is ${red}writable${reset}"
+    fi
+  done 
+
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -196,48 +262,48 @@ getWritableFiles () {
 # PROGRAM START
 echo -e "${red}ln ${blue}peas${reset}"
 
-echo -e "${red}============ ${blue}System Information ${red}============${reset}"
+echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
 getpath
 #
-# echo -e "${red}============ ${blue}Drives ${red}============${reset}"
+# echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives
 
-# echo -e "${red}============ ${blue}Installed Software ${red}============${reset}"
+# echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
 # getSoftware
 #
-# echo -e "${red}============ ${blue}Processes ${red}============${reset}"
+# echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
 #
-# echo -e "${red}============ ${blue}Scheduled/Cron jobs ${red}============${reset}"
+# echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
 # getCronjobs
 #
-# echo -e "${red}============ ${blue}Services ${red}============${reset}"
+# echo -e "${green}============ ${blue}Services ${green}============${reset}"
 # getServices
 #
-# echo -e "${red}============ ${blue}Timers ${red}============${reset}"
+# echo -e "${green}============ ${blue}Timers ${green}============${reset}"
 # getTimers
 #
-# echo -e "${red}============ ${blue}Network ${red}============${reset}"
+# echo -e "${green}============ ${blue}Network ${green}============${reset}"
 # getNetwork
 #
-# echo -e "${red}============ ${blue}Users ${red}============${reset}"
+# echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers
 #
-# echo -e "${red}============ ${blue}SUDO and SUID commands${red}============${reset}"
+# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
 # getSudoSUID
 #
-# echo -e "${red}============ ${blue}Capabilities ${red}============${reset}"
+# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
 # getCapabilities
 #
-# echo -e "${red}============ ${blue}Open Shell Sessions ${red}============${reset}"
+# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
 # getShellSessions
 #
-# echo -e "${red}============ ${blue}SSH ${red}============${reset}"
+# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
 # getSSH
 
-echo -e "${red}============ ${blue}Interesting Files ${red}============${reset}"
+echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
 getInterestingFiles
 
-echo -e "${red}============ ${blue}Writable Files ${red}============${reset}"
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
 getWritableFiles
