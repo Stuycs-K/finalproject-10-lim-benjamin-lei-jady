@@ -18,6 +18,9 @@ applycolor () {
   echo -n -e $3$1${reset}
   echo $2 | sed -E "s/.*$1//g"
 }
+formatFindResult () {
+  echo $1 | sed "s/ /\n\t/g"
+}
 
 checkpermissions () {
   # $1 is the absolute file/directory path
@@ -37,8 +40,6 @@ checkpermissions () {
   fi
   echo "$read$wr$ex"
 }
-checkpermissions "../finalproject/"
-checkpermissions ""
 
 Rootuser="root"
 getuserinfo () {
@@ -106,14 +107,14 @@ getpath () {
         currentfolder=${Path:currentind:currentfolderlen} # export each to list?
         # echo $currentfolder # we have the folder at this point
         # instead of echoing the folder, save to list? or at least check if it's a vulnerable one
-        # check owner: 
+        # check owner:
         ocheck=$(stat /etc/ | grep -E $Rootuser) # if owner rootuser then returns line starting w "Access"
         # check writable
         wrcheck=""
 
-        if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser 
+        if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser
           wrcheck=$(checkpermissions $currentfolder)
-          wrcheck=${wrcheck:1:1} # rwx or smth like r-- 
+          wrcheck=${wrcheck:1:1} # rwx or smth like r--
         fi
 
         if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
@@ -170,7 +171,6 @@ getSudoSUID () {
 getCapabilities () {
   applycolor "progress" "work in progress" ${bold}
 }
-
 getShellSessions () {
   applycolor "progress" "work in progress" ${bold}
 }
@@ -181,68 +181,73 @@ getSSH () {
 
 getInterestingFiles () {
   for fname in "/etc/profile" "/etc/profile" "/etc/passwd"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:1:1} == 'w' ]]; then
       echo -e "Profile File: ${fname} is ${red}writable${reset}"
     fi
-  done 
+  done
 
   for fname in "/etc/shadow" "/etc/shadow-" "/etc/shadow~" "/etc/gshadow" "/etc/gshadow-" "/etc/master.passwd" "/etc/spwd.db" "/etc/security/opasswd"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Profile File: ${fname} is ${yellow}readable${yellow}"
     fi
-  done 
+  done
 
   for fname in "/etc/passwd" "/etc/pwd.db" "/etc/master.passwd" "/etc/group"
-  do 
+  do
     test=$(grep -v '^[^:]*:[x\*]' "$fname" 2>/dev/null)
     if [[ ${#test} > 0 ]]; then
       echo -e "Password File: ${fname} has ${red}readable hashes${reset}"
     fi
-  done 
+  done
 
   for fname in "/tmp" "/var/tmp" "/var/backups" "/var/mail/" "/var/spool/mail/" "/root"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Folder: ${fname} is ${yellow}readable${reset}"
     fi
-  done 
+  done
 
   echo "recently modified files:"
   test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
-    echo "no SQLite db files found"
-  fi 
+    echo "no recently modified files found"
+  fi
   echo "SQLite db files:"
   test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no SQLite db files found"
-  fi 
+  fi
   echo "hidden files:"
-  test=$(find / -type f -iname ".*" -ls 2>/dev/null)
-  echo $test
+  test=$(find / -type f -iname ".*" 2>/dev/null)
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no hidden files found"
-  fi 
+  fi
   echo "webfiles:"
+  test=""
   for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
   do
     ls -alhR ${fname} 2>/dev/null
+    test+="$(ls -alhR ${fname} 2>/dev/null)"
   done
+  if [[ ${#test} == 0 ]]; then
+    echo "no webfiles files found"
+  fi
   echo "backup files:"
   test=$(find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null)
-  echo $test
+  formatFindResult "$test"
   if [[ ${#test} == 0 ]]; then
     echo "no backup files found"
-  fi 
+  fi
   for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
-  do 
+  do
     test=$(checkpermissions "$fname")
     if [[ ${test:0:1} == 'r' ]]; then
       echo -e "Shell File: ${fname} is ${red}readable${reset}"
@@ -250,7 +255,7 @@ getInterestingFiles () {
     if [[ ${test:1:1} == 'w' ]]; then
       echo -e "Shell File: ${fname} is ${red}writable${reset}"
     fi
-  done 
+  done
 
   applycolor "progress" "work in progress" ${bold}
 }
