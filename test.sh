@@ -18,6 +18,10 @@ applycolor () {
   echo -n -e $3$1${reset}
   echo $2 | sed -E "s/.*$1//g"
 }
+
+indent () {
+  echo $1 | sed "s/\n/\n\t/g"
+}
 formatFindResult () {
   echo $1 | sed "s/ /\n\t/g"
 }
@@ -170,7 +174,7 @@ getNetwork () {
     fi
   done
   text=$(dnsdomainname 2>/dev/null)
-    if [ ! "$text" = "" ]; then # if there is output then print 
+    if [ ! "$text" = "" ]; then # if there is output then print
       echo "DNS domain name: $text"
     fi
   #Interfaces
@@ -183,22 +187,15 @@ getNetwork () {
   (arp -e || arp -a)
   (route || ip n)
 
-  #Iptables rules
-  echo -e "${green}Iptables${reset}"
-  (timeout 1 iptables -L 2>/dev/null; cat /etc/iptables/* | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null)
-
-  #Files used by network services
-  echo -e "${green}Files used by network services${reset}"
-  lsof -i
+  # #Files used by network services
+  # echo -e "${green}Files used by network services${reset}"
+  # lsof -i
 
   #Open ports?
   echo -e "${green}Open Ports?${reset}"
-  (netstat -punta || ss --ntpu)
+  (netstat -punta || ss --ntpu) # indent??
   # (netstat -punta || ss --ntpu) | grep "127.0"
 
-  #Sniff traffic
-  echo -e "${green}Sniff traffic${reset}"
-  timeout 1 tcpdump
 
 }
 
