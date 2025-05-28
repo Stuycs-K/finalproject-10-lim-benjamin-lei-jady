@@ -158,32 +158,48 @@ getTimers () {
 
 getNetwork () {
 #Hostname, hosts and DNS
+#Content of /etc/inetd.conf & /etc/xinetd.conf
   lst=("/etc/hostname" "/etc/hosts" "/etc/resolv.conf" "/etc/inetd.conf" "/etc/xinetd.conf")
-  for fname in lst
+  for fname in "${lst[@]}"
   do
+    echo $fname
     text=$(cat $fname 2>/dev/null)
-    if [ ! $text = "" ]; then
-
+    if [ ! "$text" = "" ]; then
+      echo -e "${blue}Contents of ${green}$fname: ${reset}"
+      echo $text
     fi
   done
-
-  dnsdomainname
-  #Content of /etc/inetd.conf & /etc/xinetd.conf
-
+  text=$(dnsdomainname 2>/dev/null)
+    if [ ! "$text" = "" ]; then # if there is output then print 
+      echo "DNS domain name: $text"
+    fi
   #Interfaces
-  cat /etc/networks
+  echo -e "${green}Interfaces${reset}"
+  cat /etc/networks | grep -v "#"
   (ifconfig || ip a)
 
-  #Neighbours
+  #Neighbors
+  echo -e "${green}Neighbors${reset}"
   (arp -e || arp -a)
   (route || ip n)
 
   #Iptables rules
+  echo -e "${green}Iptables${reset}"
   (timeout 1 iptables -L 2>/dev/null; cat /etc/iptables/* | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null)
 
   #Files used by network services
+  echo -e "${green}Files used by network services${reset}"
   lsof -i
-  applycolor "progress" "work in progress" ${bold}
+
+  #Open ports?
+  echo -e "${green}Open Ports?${reset}"
+  (netstat -punta || ss --ntpu)
+  # (netstat -punta || ss --ntpu) | grep "127.0"
+
+  #Sniff traffic
+  echo -e "${green}Sniff traffic${reset}"
+  timeout 1 tcpdump
+
 }
 
 getUsers () {
@@ -295,7 +311,7 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-getpath
+# getpath
 #
 # echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives

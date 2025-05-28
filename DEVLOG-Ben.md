@@ -40,6 +40,7 @@ Fixed checkpermissions syntax but it's not super useful on my device because I o
 If a folder is in path, owned by the root user, and writable by everyone, it'll be orange. In theory at least, because none of my folders are writable by everyone.
 
 ### 2024-05-26 - Starting Network
-Leaving path for later because need coloring functionality. Starting network enumeration
+Leaving path for later because need coloring functionality. Starting network enumeration.
+Finished network but it's just a bunch of print statements and haven't tested...
 
 ### 2024-05-19 - Pair programming on getting system info
