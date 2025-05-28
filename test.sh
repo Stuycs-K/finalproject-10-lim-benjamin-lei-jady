@@ -20,6 +20,12 @@ applycolor () {
 }
 formatFindResult () {
   echo $1 | sed "s/ /\n\t/g"
+  if [[ ${#1} == 0 ]]; then
+    echo "none found"
+  fi
+}
+formatHeader() {
+  echo -e "${bold}$1${reset}"
 }
 
 checkpermissions () {
@@ -42,6 +48,7 @@ checkpermissions () {
 }
 
 Rootuser="root"
+group=""
 getuserinfo () {
   User=$(uname -n)
   Machine=$(uname -m)
@@ -56,6 +63,8 @@ getuserinfo () {
   Logname=${Logname:8}
   PWD=$(env | grep -E "^PWD" | sed -E "s/PWD=//")
   Home=$(env | grep -E "^HOME" | sed -E "s/HOME=//")
+  group=$(id -g)
+  echo "Group:$group"
   # echo $Logname
   # echo ${Logname}
   # echo $PWD
@@ -170,7 +179,7 @@ getNetwork () {
     fi
   done
   text=$(dnsdomainname 2>/dev/null)
-    if [ ! "$text" = "" ]; then # if there is output then print 
+    if [ ! "$text" = "" ]; then # if there is output then print
       echo "DNS domain name: $text"
     fi
   #Interfaces
@@ -254,40 +263,30 @@ getInterestingFiles () {
     fi
   done
 
-  echo "recently modified files:"
+  formatHeader "recently modified files:"
   test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
   formatFindResult "$test"
-  if [[ ${#test} == 0 ]]; then
-    echo "no recently modified files found"
-  fi
-  echo "SQLite db files:"
+
+  formatHeader "SQLite db files:"
   test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
   formatFindResult "$test"
-  if [[ ${#test} == 0 ]]; then
-    echo "no SQLite db files found"
-  fi
-  echo "hidden files:"
+
+  formatHeader "hidden files:"
   test=$(find / -type f -iname ".*" 2>/dev/null)
   formatFindResult "$test"
-  if [[ ${#test} == 0 ]]; then
-    echo "no hidden files found"
-  fi
-  echo "webfiles:"
+
+  formatHeader "webfiles:"
   test=""
   for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
   do
     ls -alhR ${fname} 2>/dev/null
     test+="$(ls -alhR ${fname} 2>/dev/null)"
   done
-  if [[ ${#test} == 0 ]]; then
-    echo "no webfiles files found"
-  fi
-  echo "backup files:"
+  formatFindResult "$test"
+
+  formatHeader "backup files:"
   test=$(find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null)
   formatFindResult "$test"
-  if [[ ${#test} == 0 ]]; then
-    echo "no backup files found"
-  fi
   for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
   do
     test=$(checkpermissions "$fname")
@@ -298,11 +297,13 @@ getInterestingFiles () {
       echo -e "Shell File: ${fname} is ${red}writable${reset}"
     fi
   done
-
-  applycolor "progress" "work in progress" ${bold}
 }
 
 getWritableFiles () {
+  formatHeader "potentially writable libraries:"
+  test=$(find /usr/lib/ -group $group 2>/dev/null)
+  formatFindResult "$test"
+
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -331,8 +332,8 @@ getuserinfo
 # echo -e "${green}============ ${blue}Timers ${green}============${reset}"
 # getTimers
 #
-echo -e "${green}============ ${blue}Network ${green}============${reset}"
-getNetwork
+# echo -e "${green}============ ${blue}Network ${green}============${reset}"
+# getNetwork
 #
 # echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers
@@ -349,8 +350,8 @@ getNetwork
 # echo -e "${green}============ ${blue}SSH ${green}============${reset}"
 # getSSH
 
-# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-# getInterestingFiles
+echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+getInterestingFiles
 #
-# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-# getWritableFiles
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+getWritableFiles
