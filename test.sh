@@ -193,10 +193,10 @@ getNetwork () {
   cat /etc/networks | grep -v "#"
   (ifconfig || ip a)
 
-  #Neighbors
-  echo -e "${green}Neighbors${reset}"
-  (arp -e || arp -a)
-  (route || ip n)
+  # #Neighbors
+  # echo -e "${green}Neighbors${reset}"
+  # (arp -e || arp -a)
+  # (route || ip n)
 
   # #Files used by network services
   # echo -e "${green}Files used by network services${reset}"
@@ -204,10 +204,11 @@ getNetwork () {
 
   #Open ports?
   echo -e "${green}Open Ports?${reset}"
-  (netstat -punta || ss --ntpu) # indent??
-  # (netstat -punta || ss --ntpu) | grep "127.0"
+  # Lines: 1-protocol, 4-local address, 5-foreign address, 6-listen, 7-PID
+  echo -e "${blue}TCP${reset}"
 
-
+  netstat -punta | grep -E "tcp\s" | sed -E "s/^(\w)+\s+[0-9]+\s+[0-9]+(\s+[0-9\.:*]+)(\s+[0-9\.:*]+).*$/\1 \2 \3/g"
+  # 1 4 5
 }
 
 getUsers () {
@@ -311,7 +312,7 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-# getpath
+getpath
 #
 # echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives
@@ -331,9 +332,9 @@ getuserinfo
 # echo -e "${green}============ ${blue}Timers ${green}============${reset}"
 # getTimers
 #
-# echo -e "${green}============ ${blue}Network ${green}============${reset}"
-# getNetwork
-#
+echo -e "${green}============ ${blue}Network ${green}============${reset}"
+getNetwork
+
 # echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers
 #

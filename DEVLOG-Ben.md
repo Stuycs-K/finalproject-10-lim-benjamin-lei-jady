@@ -46,4 +46,7 @@ Finished network but it's just a bunch of print statements and haven't tested...
 ### 2025-05-28 - Formatting networks
 Tried and failed to get indenting working on netstat -punta
 
+### 2025-05-28 - Formatting networks
+Worked on regex to parse the porrts well
+
 ### 2025-05-19 - Pair programming on getting system info
