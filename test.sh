@@ -303,6 +303,22 @@ getWritableFiles () {
   test=$(find /usr/lib/ -group $group 2>/dev/null)
   formatFindResult "$test"
 
+  formatHeader "checking logrotate version"
+  test=$(logrotate --version | head -n 1 | sed -E "s/logrotate ([0-9]+\.[0-9]+\.[0.9]+).*/\1/g")
+  # test=$(logrotate --version)
+  version=$(echo $test | sed -E "s/\..*\..*$//g")
+  subversion=$(echo $test | sed -E "s/\.([0-9]+)\..*$/\1/g")
+  echo "$version $subversion"
+  if [[ $version -lt 3 ]]; then
+    echo -e "${red} Logrotate is out of date and susceptible to logrotten and privesc${reset}"
+  elif [[ $version -lt 4 ]] && [[ $subversion -lt 18 ]]; then
+    echo -e "${red} Logrotate is out of date and susceptible to logrotten and privesc${reset}"
+  else
+    echo "Logrotate version likely fine."
+  fi
+  echo $test
+
+
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -352,5 +368,5 @@ getuserinfo
 # echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
 # getInterestingFiles
 
-# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-# getWritableFiles
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+getWritableFiles

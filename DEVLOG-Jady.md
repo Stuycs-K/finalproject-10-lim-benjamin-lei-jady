@@ -34,7 +34,10 @@ Interesting/writable files (start)
 Interesting files finish
 clean up printing of interesting files find results
 
-### 2025-05-27 - lock in pt 2
+### 2025-05-28 - lock in pt 2
 better formatting
 start writing writablefiles
 better formatting for find results
+
+### 2025-05-29 - lock in pt 3
+logrotate
