@@ -23,7 +23,9 @@ indent () {
   echo $1 | sed "s/\n/\n\t/g"
 }
 formatFindResult () {
-  echo $1 | sed "s/ /\n\t/g"
+  if [[ ${#1} != 0 ]]; then
+    echo $1 | sed "s/ /\n\t/g"
+  fi
   if [[ ${#1} == 0 ]]; then
     echo "none found"
   fi
@@ -347,8 +349,8 @@ getuserinfo
 # echo -e "${green}============ ${blue}SSH ${green}============${reset}"
 # getSSH
 
-echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-getInterestingFiles
-#
-echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-getWritableFiles
+# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+# getInterestingFiles
+
+# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+# getWritableFiles

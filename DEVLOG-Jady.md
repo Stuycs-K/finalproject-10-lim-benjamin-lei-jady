@@ -37,3 +37,4 @@ clean up printing of interesting files find results
 ### 2025-05-27 - lock in pt 2
 better formatting
 start writing writablefiles
+better formatting for find results
