@@ -193,21 +193,21 @@ getNetwork () {
   cat /etc/networks | grep -v "#"
   (ifconfig || ip a)
 
-  # #Neighbors
-  # echo -e "${green}Neighbors${reset}"
-  # (arp -e || arp -a)
-  # (route || ip n)
+  #Neighbors
+  echo -e "${green}Neighbors${reset}"
+  (arp -e || arp -a)
+  (route || ip n)
 
-  # #Files used by network services
-  # echo -e "${green}Files used by network services${reset}"
-  # lsof -i
+  #Files used by network services
+  echo -e "${green}Files used by network services${reset}"
+  lsof -i
 
   #Open ports?
   echo -e "${green}Open Ports?${reset}"
   # Lines: 1-protocol, 4-local address, 5-foreign address, 6-listen, 7-PID
-  echo -e "${blue}TCP${reset}"
+  # echo -e "${blue}TCP${reset}"
 
-  netstat -punta | grep -E "tcp\s" | sed -E "s/^(\w)+\s+[0-9]+\s+[0-9]+(\s+[0-9\.:*]+)(\s+[0-9\.:*]+).*$/\1 \2 \3/g"
+  netstat -punta | grep -E "^[tu]" | sed -E "s/^(\w+)\s+[0-9]+\s+[0-9]+\s+([0-9\.:*]+)\s+([0-9\.:*]+)\s+(\w*)\s+(.*)$/\1 PID:\5\t local ip \2 with \4 connection to \3/g" | sort -h -k2
   # 1 4 5
 }
 
