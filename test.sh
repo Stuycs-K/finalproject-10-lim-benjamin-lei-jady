@@ -160,6 +160,10 @@ getProcesses () {
 }
 
 getCronjobs () {
+  # check for commands without set paths
+  # check for wildcard injections
+  # check for modificable cron scripts executed by rootuser (or directories)
+  # can check for frequently run cronjobs -- possible privesc vector
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -339,8 +343,8 @@ getpath
 # echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
 #
-# echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-# getCronjobs
+echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+getCronjobs
 #
 # echo -e "${green}============ ${blue}Services ${green}============${reset}"
 # getServices
@@ -348,8 +352,8 @@ getpath
 # echo -e "${green}============ ${blue}Timers ${green}============${reset}"
 # getTimers
 #
-echo -e "${green}============ ${blue}Network ${green}============${reset}"
-getNetwork
+# echo -e "${green}============ ${blue}Network ${green}============${reset}"
+# getNetwork
 
 # echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers

@@ -46,7 +46,10 @@ Finished network but it's just a bunch of print statements and haven't tested...
 ### 2025-05-28 - Formatting networks
 Tried and failed to get indenting working on netstat -punta
 
-### 2025-05-28 - Formatting networks
+### 2025-05-29 - Formatting networks
 Worked on regex to parse the ports well. Later finished the formatting for open ports
+
+### 2025-05-30 - Started cronjobs
+Wrote outline on steps to do (check)
 
 ### 2025-05-19 - Pair programming on getting system info
