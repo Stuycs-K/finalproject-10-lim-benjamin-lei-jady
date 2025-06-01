@@ -216,18 +216,31 @@ getNetwork () {
 }
 
 getUsers () {
+  formatHeader "All users and their groups"
+  for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort grep --color "root\|sudo\|adm\|$"
+  echo $test
+  formatHeader "users with console:"
+  cat /etc/passwd 2>/dev/null | grep "sh$" 
+  formatHeader "currently logged users:"
+  w
+  formatHeader "login history (last 10):"
+  last | head
   applycolor "progress" "work in progress" ${bold}
 }
 
 getSudoSUID () {
-  applycolor "progress" "work in progress" ${bold}
+  formatHeader "commands executable with sudo:"
+  sudo -l 2>/dev/null
+  formatHeader "suid binaries:"
+  formatFindResult $(find / -perm -4000 2>/dev/null)
 }
 
 getCapabilities () {
-  applycolor "progress" "work in progress" ${bold}
+  applycolor "progress" "(Permanent, due to complexity and unfamiliarity) work in progress" ${bold}
 }
 getShellSessions () {
-  applycolor "progress" "work in progress" ${bold}
+  screen -ls 2>/dev/null
+  tmux ls 2>/dev/null
 }
 
 getSSH () {
@@ -240,7 +253,6 @@ getSSH () {
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PasswordAuthentication")
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PubkeyAuthentication")
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitEmptyPasswords")
-  applycolor "progress" "work in progress" ${bold}
 }
 
 getInterestingFiles () {
@@ -357,8 +369,8 @@ getpath
 # echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
 #
-echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-getCronjobs
+# echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+# getCronjobs
 #
 # echo -e "${green}============ ${blue}Services ${green}============${reset}"
 # getServices

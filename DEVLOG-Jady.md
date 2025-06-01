@@ -45,3 +45,6 @@ logrotate
 ### 2025-06-01 - happy pride month! lock in pt 4
 finish writablefiles
 finish ssh
+finish open shell sessions
+finish sudo/suid
+finish users
