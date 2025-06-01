@@ -41,3 +41,7 @@ better formatting for find results
 
 ### 2025-05-29 - lock in pt 3
 logrotate
+
+### 2025-06-01 - happy pride month! lock in pt 4
+finish writablefiles
+finish ssh

@@ -231,6 +231,15 @@ getShellSessions () {
 }
 
 getSSH () {
+  formatHeader "Analyzing SSH Files"
+  formatFindResult $(find /etc/ssh/ ~/.ssh/ -name "*.pub*" 2>/dev/null)
+  echo $(ls -l ~/.ssh/known_hosts 2>/dev/null)
+  formatFindResult $(cat ~/.ssh/known_hosts 2>/dev/null)
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitRootLogin")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^UsePAM")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PasswordAuthentication")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PubkeyAuthentication")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitEmptyPasswords")
   applycolor "progress" "work in progress" ${bold}
 }
 
@@ -323,8 +332,13 @@ getWritableFiles () {
   fi
   echo $test
 
-
-  applycolor "progress" "work in progress" ${bold}
+  test=$(checkpermissions "/etc/sysconfig/network-scripts/")
+  if [[ ${test:1:1} == 'w' ]]; then
+    echo -e "${red} : /etc/sysconfig/network-scripts/ is writable${reset}"
+  fi
+  formatHeader "writable network-scripts:"
+  test=$(find /usr/lib/ -group $group 2>/dev/null)
+  formatFindResult "$test"
 }
 
 # PROGRAM START
@@ -373,5 +387,5 @@ getCronjobs
 # echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
 # getInterestingFiles
 
-echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-getWritableFiles
+# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+# getWritableFiles
