@@ -133,7 +133,7 @@ getpath () {
         fi
 
         if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
-          currentfolder=$(applycolor $currentfolder $currentfolder "orange")
+          currentfolder=$(applycolor $currentfolder $currentfolder "red")
         fi
         echo $currentfolder
       fi
@@ -160,6 +160,41 @@ getProcesses () {
 }
 
 getCronjobs () {
+  scriptends=("js" "py" "sh" "pl" "php")
+  crontasks=$(cat /etc/crontab | grep root | wc -l)
+  echo -e "Cronjobs executed by root user:"
+  echo -e "$crontasks"
+  # plan: get scriptname and split it into directory and fname vars 
+  # tried but couldn't figure the sed command for it
+  # will provide advice + basic scan
+  for i in {0..$crontasks}
+  do
+    fpath=$(cat /etc/crontab | grep root | awk -F '\\s' '{print $NF}') #last word
+    if ["$fpath" = ")"]; then
+      fpath=$(cat /etc/crontab | grep root | awk -F '\\s' '{print $(NF-1)}') #second to last word
+    fi
+    scriptcheck="f" # check endings
+    for ext in "${scriptends[@]}"
+    do
+      test=$(echo $fpath | grep $ext)
+      if [ ! "$test" = ""]; then
+        scriptcheck=$test # if ext in fpath then scriptcheck != "f"
+      fi
+    done
+    if ["$scriptcheck" = "f"]; then
+      continue
+    fi
+    # echo $fpath
+    relpathcheck=""
+    relpathcheck=$(echo $fpath | grep "/")
+    echo $relpathcheck
+    if ["$relpathcheck" = ""]; then # true if has no slash
+      echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${clear}"
+      continue
+    fi
+
+
+  done
   # check for commands without set paths
   # check for wildcard injections
   # check for modificable cron scripts executed by rootuser (or directories)
@@ -358,7 +393,7 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-getpath
+# getpath
 #
 # echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives
@@ -369,9 +404,9 @@ getpath
 # echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
 #
-# echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-# getCronjobs
-#
+echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+getCronjobs
+
 # echo -e "${green}============ ${blue}Services ${green}============${reset}"
 # getServices
 #

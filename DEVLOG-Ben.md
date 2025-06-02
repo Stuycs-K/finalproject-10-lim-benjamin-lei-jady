@@ -52,4 +52,9 @@ Worked on regex to parse the ports well. Later finished the formatting for open 
 ### 2025-05-30 - Started cronjobs
 Wrote outline on steps to do (check)
 
+### 2025-06-01 - Lockin work
+Working on isolating crontab files, have `cat /etc/crontab | grep root | sed -E "s/(\S+)\s+(\S+)\s*$/$1 $2/g"`
+Now `cat /etc/crontab | grep root | sed -E "s/^.*\s+(\S+)\s*$/$1/g"` but gave up bc not wrestling w regex: gonna give a checklist.
+
+
 ### 2025-05-19 - Pair programming on getting system info
