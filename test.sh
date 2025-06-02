@@ -420,9 +420,26 @@ echo -e "${red}ln ${blue}peas${reset}"
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
 # getpath
-#
-echo -e "${green}============ ${blue}Network ${green}============${reset}"
-getNetwork
+echo -e "${green}============ ${blue}Drives ${green}============${reset}"
+getDrives
+
+echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+getSoftware
+
+echo -e "${green}============ ${blue}Processes ${green}============${reset}"Add commentMore actions
+getProcesses
+
+echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+getCronjobs
+
+echo -e "${green}============ ${blue}Services ${green}============${reset}"
+getServices
+
+echo -e "${green}============ ${blue}Timers ${green}============${reset}"
+getTimers
+
+# echo -e "${green}============ ${blue}Network ${green}============${reset}"
+# getNetwork
 #
 # echo -e "${green}============ ${blue}Users ${green}============${reset}"
 # getUsers
