@@ -48,3 +48,7 @@ finish ssh
 finish open shell sessions
 finish sudo/suid
 finish users
+
+### 2025-06-01 - happy pride month! pt 2 lock in pt 5
+getServices
+getTimer

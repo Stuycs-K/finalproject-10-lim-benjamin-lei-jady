@@ -210,11 +210,23 @@ getCronjobs () {
 }
 
 getServices () {
+  formatHeader "Service Files (max 20)"
+  formatFindResult $(find / -name "*.service" 2>/dev/null | head -n 20)
+  formatHeader "Writable by Group:"
+  formatFindResult $(find / -perm g=w -name "*.service" 2>/dev/null)
   applycolor "progress" "work in progress" ${bold}
 }
 
 getTimers () {
-  applycolor "progress" "work in progress" ${bold}
+  formatHeader "Timers: (max 20)"
+  formatFindResult $(systemctl list-timers --all 2>/dev/null | head -n 20)
+  formatHeader "Writable by Group:"
+  formatFindResult $(find / -perm g=w -name "*.timer" 2>/dev/null | head -n 20)
+  # test=$(find / -name "*.timer" 2>/dev/null | head -n 20 | tr "\n" " ")
+  # for fname in $test
+  # do
+  #   ls -l $fname
+  # done
 }
 
 getNetwork () {
