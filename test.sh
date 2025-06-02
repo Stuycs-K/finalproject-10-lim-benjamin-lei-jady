@@ -167,13 +167,13 @@ getCronjobs () {
   crontasks=$(cat /etc/crontab | grep root | wc -l)
   echo -e "Cronjobs executed by root user:"
   echo -e "$crontasks"
-  # plan: get scriptname and split it into directory and fname vars 
+  # plan: get scriptname and split it into directory and fname vars
   # tried but couldn't figure the sed command for it
   # will provide advice + basic scan
   for i in $(seq 1 $crontasks) # braces expansion {1..$crontasks} broke :(((
   do
-    echo "Cronjob $i"
-    # echo $(cat /etc/crontab | grep $Rootuser | awk "NR==$i+1")
+    echo "Cronjob $i: $(cat /etc/crontab | grep $Rootuser | awk "NR==$i")"
+    # echo $(cat /etc/crontab | grep $Rootuser | awk "NR==$i")
     # echo $(($i + 1)) # who decided u needed a space for adding here :(((
     fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==$i" | awk -F '\\s+' '{print $NF}') #last word
     #echo $fpath
@@ -192,27 +192,27 @@ getCronjobs () {
     done
     #echo $fpath
     if [ "$scriptcheck" = "f" ]; then
-      echo "scriptfail"
+      echo "Not a vulnerability because $fpath is not a script." # not a script
       continue
     fi
     relpathcheck=""
     relpathcheck=$(echo $fpath | grep "/")
     # echo "here we are $relpathcheck"
+    echo -e "${yellow}POSSIBLE PRIV-ESC IF $fpath OR ITS DIRECTORY IS MODIFICABLE${reset}"
     if [ "$relpathcheck" = "" ]; then # true if has no slash
       echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${reset}"
+      # could technically test this for them
       if [ "${fpath:0:1}" = "*" ]; then
         echo -e "${yellow}POSSIBLE WILDCARD INJECTION VULNERABILITY WITH $fpath${reset}"
       fi
       continue
     fi
-    echo -e "${yellow}POSSIBLE PRIV-ESC IF $fpath OR ITS DIRECTORY IS MODIFICABLE${reset}"
 
   done
   # check for commands without set paths
   # check for wildcard injections
   # check for modificable cron scripts executed by rootuser (or directories)
   # can check for frequently run cronjobs -- possible privesc vector
-  applycolor "progress" "work in progress" ${bold}
 }
 
 getServices () {
@@ -281,7 +281,7 @@ getUsers () {
   for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep --color "root\|sudo\|adm\|$"
 
   formatHeader "users with console:"
-  cat /etc/passwd 2>/dev/null | grep "sh$" 
+  cat /etc/passwd 2>/dev/null | grep "sh$"
   formatHeader "currently logged users:"
   w
   formatHeader "login history (last 10):"

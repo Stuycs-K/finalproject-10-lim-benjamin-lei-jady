@@ -57,4 +57,7 @@ Working on isolating crontab files, have `cat /etc/crontab | grep root | sed -E 
 Now `cat /etc/crontab | grep root | sed -E "s/^.*\s+(\S+)\s*$/$1/g"` but gave up bc not wrestling w regex: gonna give a checklist.
 Ok so worked on it and used awk to get lines, only thing is the loop only gets the cron hourly output and not the parentheses and idk why; going to sleep
 
+### 2025-06-02 - Cronjob finished, further work in class
+Finished cronjob in first 10m of class and outside of class.
+
 ### 2025-05-19 - Pair programming on getting system info
