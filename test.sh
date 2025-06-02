@@ -152,7 +152,9 @@ getDrives () {
 }
 
 getSoftware () {
-  applycolor "progress" "work in progress" ${bold}
+  echo -e "Checking for useful software:"
+  which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc ctr runc rkt kubectl 2>/dev/null
+
 }
 
 getProcesses () {
@@ -189,10 +191,13 @@ getCronjobs () {
     relpathcheck=$(echo $fpath | grep "/")
     echo $relpathcheck
     if ["$relpathcheck" = ""]; then # true if has no slash
-      echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${clear}"
+      echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${reset}"
+      if ["${fpath:0:1}" = "*"]; then
+        echo -e "${yellow}POSSIBLE WILDCARD INJECTION VULNERABILITY WITH $fpath${reset}"
+      fi
       continue
     fi
-
+    echo -e "${yellow}POSSIBLE PRIV-ESC IF $fpath OR ITS DIRECTORY IS MODIFICABLE${reset}"
 
   done
   # check for commands without set paths
