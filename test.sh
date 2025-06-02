@@ -171,26 +171,28 @@ getCronjobs () {
   # will provide advice + basic scan
   for i in {0..$crontasks}
   do
-    fpath=$(cat /etc/crontab | grep root | awk -F '\\s' '{print $NF}') #last word
-    if ["$fpath" = ")"]; then
-      fpath=$(cat /etc/crontab | grep root | awk -F '\\s' '{print $(NF-1)}') #second to last word
+    fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==i+1" | awk -F '\\s+' '{print $NF}') #last word
+    if [ "$fpath" = ")" ]; then
+      #echo $fpath
+      fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==i+1" | awk -F '\\s+' '{print $(NF-1)}') #second to last word
     fi
+    echo $fpath
     scriptcheck="f" # check endings
     for ext in "${scriptends[@]}"
     do
       test=$(echo $fpath | grep $ext)
-      if [ ! "$test" = ""]; then
+      if [ ! "$test" = "" ]; then
         scriptcheck=$test # if ext in fpath then scriptcheck != "f"
       fi
     done
-    if ["$scriptcheck" = "f"]; then
+    echo $fpath
+    if [ "$scriptcheck" = "f" ]; then
       continue
     fi
-    # echo $fpath
     relpathcheck=""
     relpathcheck=$(echo $fpath | grep "/")
-    echo $relpathcheck
-    if ["$relpathcheck" = ""]; then # true if has no slash
+    echo "here we are $relpathcheck"
+    if [ "$relpathcheck" = "" ]; then # true if has no slash
       echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${reset}"
       if ["${fpath:0:1}" = "*"]; then
         echo -e "${yellow}POSSIBLE WILDCARD INJECTION VULNERABILITY WITH $fpath${reset}"
@@ -403,8 +405,8 @@ getuserinfo
 # echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives
 
-# echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-# getSoftware
+echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+getSoftware
 #
 # echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
