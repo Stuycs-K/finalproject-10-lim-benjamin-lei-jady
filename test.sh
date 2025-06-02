@@ -23,6 +23,7 @@ indent () {
   echo $1 | sed "s/\n/\n\t/g"
 }
 formatFindResult () {
+  echo -n -e "\t"
   if [[ ${#1} != 0 ]]; then
     echo $1 | sed "s/ /\n\t/g"
   fi
@@ -216,17 +217,18 @@ getCronjobs () {
 
 getServices () {
   formatHeader "Service Files (max 20)"
-  formatFindResult "$(find / -name "*.service" 2>/dev/null)"  | head -n 20
+  formatFindResult "$(find / -type f -name "*.service" 2>/dev/null)"  | head -n 20
   formatHeader "Writable by Group:"
-  formatFindResult "$(find / -perm -g=w -name "*.service" 2>/dev/null)"
+  formatFindResult "$(find /-type f -perm -g=w -name "*.service" 2>/dev/null)" | head -n 20
   applycolor "progress" "work in progress" ${bold}
 }
 
 getTimers () {
   formatHeader "Timers: (max 20)"
-  formatFindResult "$(systemctl list-timers --all 2>/dev/null)"  | head -n 20
-  formatHeader "Potentially Writable by Group:"
-  formatFindResult "$(find / -perm -g=w -name "*.timer" 2>/dev/null)" | head -n 20
+  # formatFindResult "$(systemctl list-timers --all 2>/dev/null)"  | head -n 20
+  systemctl list-timers --all 2>/dev/null | head -n 20
+  formatHeader "Writable by Group:"
+  formatFindResult "$(find / -type f -perm -g=w -name "*.timer" 2>/dev/null)" | head -n 20
   # test=$(find / -name "*.timer" 2>/dev/null | head -n 20 | tr "\n" " ")
   # for fname in $test
   # do
@@ -276,8 +278,8 @@ getNetwork () {
 
 getUsers () {
   formatHeader "All users and their groups"
-  for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort grep --color "root\|sudo\|adm\|$"
-  echo $test
+  for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep --color "root\|sudo\|adm\|$"
+
   formatHeader "users with console:"
   cat /etc/passwd 2>/dev/null | grep "sh$"
   formatHeader "currently logged users:"
