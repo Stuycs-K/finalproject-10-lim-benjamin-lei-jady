@@ -169,14 +169,18 @@ getCronjobs () {
   # plan: get scriptname and split it into directory and fname vars 
   # tried but couldn't figure the sed command for it
   # will provide advice + basic scan
-  for i in {0..$crontasks}
+  for i in $(seq 1 $crontasks) # braces expansion {1..$crontasks} broke :(((
   do
-    fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==i+1" | awk -F '\\s+' '{print $NF}') #last word
+    echo "Cronjob $i"
+    # echo $(cat /etc/crontab | grep $Rootuser | awk "NR==$i+1")
+    # echo $(($i + 1)) # who decided u needed a space for adding here :(((
+    fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==$i" | awk -F '\\s+' '{print $NF}') #last word
+    #echo $fpath
     if [ "$fpath" = ")" ]; then
       #echo $fpath
-      fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==i+1" | awk -F '\\s+' '{print $(NF-1)}') #second to last word
+      fpath=$(cat /etc/crontab | grep $Rootuser | awk "NR==$i" | awk -F '\\s+' '{print $(NF-1)}') #second to last word
     fi
-    echo $fpath
+    #echo $fpath
     scriptcheck="f" # check endings
     for ext in "${scriptends[@]}"
     do
@@ -185,16 +189,17 @@ getCronjobs () {
         scriptcheck=$test # if ext in fpath then scriptcheck != "f"
       fi
     done
-    echo $fpath
+    #echo $fpath
     if [ "$scriptcheck" = "f" ]; then
+      echo "scriptfail"
       continue
     fi
     relpathcheck=""
     relpathcheck=$(echo $fpath | grep "/")
-    echo "here we are $relpathcheck"
+    # echo "here we are $relpathcheck"
     if [ "$relpathcheck" = "" ]; then # true if has no slash
       echo -e "${red}IF YOU HAVE WRITE PERMISSIONS IN PATH, YOU CAN PRIV-ESC W RELATIVE PATH OVERWRITING $fpath${reset}"
-      if ["${fpath:0:1}" = "*"]; then
+      if [ "${fpath:0:1}" = "*" ]; then
         echo -e "${yellow}POSSIBLE WILDCARD INJECTION VULNERABILITY WITH $fpath${reset}"
       fi
       continue
