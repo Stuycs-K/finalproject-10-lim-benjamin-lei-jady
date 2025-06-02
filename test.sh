@@ -240,17 +240,17 @@ getNetwork () {
   lst=("/etc/hostname" "/etc/hosts" "/etc/resolv.conf" "/etc/inetd.conf" "/etc/xinetd.conf")
   for fname in "${lst[@]}"
   do
-    echo $fname
-    text=$(cat $fname 2>/dev/null)
+    echo -e "${blue}Contents of ${green}$fname: ${reset}"
+    text=$(cat -e $fname 2>/dev/null)
     if [ ! "$text" = "" ]; then
-      echo -e "${blue}Contents of ${green}$fname: ${reset}"
-      echo $text
+      cat -e $fname 2>/dev/null
     fi
   done
   text=$(dnsdomainname 2>/dev/null)
     if [ ! "$text" = "" ]; then # if there is output then print
       echo "DNS domain name: $text"
     fi
+
   #Interfaces
   echo -e "${green}Interfaces${reset}"
   cat /etc/networks | grep -v "#"
@@ -419,44 +419,26 @@ echo -e "${green}============ ${blue}System Information ${green}============${re
 getuserinfo
 # getpath
 #
-echo -e "${green}============ ${blue}Drives ${green}============${reset}"
-getDrives
-
-echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-getSoftware
-
-echo -e "${green}============ ${blue}Processes ${green}============${reset}"
-getProcesses
-
-echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-getCronjobs
-
-echo -e "${green}============ ${blue}Services ${green}============${reset}"
-getServices
-
-echo -e "${green}============ ${blue}Timers ${green}============${reset}"
-getTimers
-
 echo -e "${green}============ ${blue}Network ${green}============${reset}"
 getNetwork
-
-echo -e "${green}============ ${blue}Users ${green}============${reset}"
-getUsers
-
-echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
-getSudoSUID
-
-echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
-getCapabilities
-
-echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
-getShellSessions
-
-echo -e "${green}============ ${blue}SSH ${green}============${reset}"
-getSSH
-
-echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-getInterestingFiles
-
-echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-getWritableFiles
+#
+# echo -e "${green}============ ${blue}Users ${green}============${reset}"
+# getUsers
+#
+# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
+# getSudoSUID
+#
+# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
+# getCapabilities
+#
+# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
+# getShellSessions
+#
+# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
+# getSSH
+#
+# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+# getInterestingFiles
+#
+# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+# getWritableFiles
