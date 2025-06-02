@@ -216,17 +216,17 @@ getCronjobs () {
 
 getServices () {
   formatHeader "Service Files (max 20)"
-  formatFindResult $(find / -name "*.service" 2>/dev/null | head -n 20)
+  formatFindResult "$(find / -name "*.service" 2>/dev/null)"  | head -n 20
   formatHeader "Writable by Group:"
-  formatFindResult $(find / -perm g=w -name "*.service" 2>/dev/null)
+  formatFindResult "$(find / -perm -g=w -name "*.service" 2>/dev/null)"
   applycolor "progress" "work in progress" ${bold}
 }
 
 getTimers () {
   formatHeader "Timers: (max 20)"
-  formatFindResult $(systemctl list-timers --all 2>/dev/null | head -n 20)
-  formatHeader "Writable by Group:"
-  formatFindResult $(find / -perm g=w -name "*.timer" 2>/dev/null | head -n 20)
+  formatFindResult "$(systemctl list-timers --all 2>/dev/null)"  | head -n 20
+  formatHeader "Potentially Writable by Group:"
+  formatFindResult "$(find / -perm -g=w -name "*.timer" 2>/dev/null)" | head -n 20
   # test=$(find / -name "*.timer" 2>/dev/null | head -n 20 | tr "\n" " ")
   # for fname in $test
   # do
@@ -304,9 +304,9 @@ getShellSessions () {
 
 getSSH () {
   formatHeader "Analyzing SSH Files"
-  formatFindResult $(find /etc/ssh/ ~/.ssh/ -name "*.pub*" 2>/dev/null)
+  formatFindResult "$(find /etc/ssh/ ~/.ssh/ -name "*.pub*" 2>/dev/null)"
   echo $(ls -l ~/.ssh/known_hosts 2>/dev/null)
-  formatFindResult $(cat ~/.ssh/known_hosts 2>/dev/null)
+  formatFindResult "$(cat ~/.ssh/known_hosts 2>/dev/null)"
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitRootLogin")
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^UsePAM")
   echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PasswordAuthentication")
@@ -347,16 +347,16 @@ getInterestingFiles () {
     fi
   done
 
-  formatHeader "recently modified files:"
-  test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null)
+  formatHeader "recently modified files (max 20):"
+  test=$(find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2>/dev/null | head -n 20)
   formatFindResult "$test"
 
-  formatHeader "SQLite db files:"
-  test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null)
+  formatHeader "SQLite db files (max 20):"
+  test=$(find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null | head -n 20)
   formatFindResult "$test"
 
-  formatHeader "hidden files:"
-  test=$(find / -type f -iname ".*" 2>/dev/null)
+  formatHeader "hidden files (max 20):"
+  test=$(find / -type f -iname ".*" 2>/dev/null | head -n 20)
   formatFindResult "$test"
 
   formatHeader "webfiles:"
@@ -364,9 +364,9 @@ getInterestingFiles () {
   for fname in "/var/www/" "/srv/www/htdocs/" "/usr/local/www/apache22/data/" "/opt/lampp/htdocs/"
   do
     ls -alhR ${fname} 2>/dev/null
-    test+="$(ls -alhR ${fname} 2>/dev/null)"
+    # test+="$(ls -alhR ${fname} 2>/dev/null)"
   done
-  formatFindResult "$test"
+  # formatFindResult "$test"
 
   formatHeader "backup files:"
   test=$(find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null)
@@ -419,44 +419,44 @@ echo -e "${green}============ ${blue}System Information ${green}============${re
 getuserinfo
 # getpath
 #
-# echo -e "${green}============ ${blue}Drives ${green}============${reset}"
-# getDrives
+echo -e "${green}============ ${blue}Drives ${green}============${reset}"
+getDrives
 
 echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
 getSoftware
-#
-# echo -e "${green}============ ${blue}Processes ${green}============${reset}"
-# getProcesses
-#
+
+echo -e "${green}============ ${blue}Processes ${green}============${reset}"
+getProcesses
+
 echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
 getCronjobs
 
-# echo -e "${green}============ ${blue}Services ${green}============${reset}"
-# getServices
-#
-# echo -e "${green}============ ${blue}Timers ${green}============${reset}"
-# getTimers
-#
-# echo -e "${green}============ ${blue}Network ${green}============${reset}"
-# getNetwork
+echo -e "${green}============ ${blue}Services ${green}============${reset}"
+getServices
 
-# echo -e "${green}============ ${blue}Users ${green}============${reset}"
-# getUsers
-#
-# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
-# getSudoSUID
-#
-# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
-# getCapabilities
-#
-# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
-# getShellSessions
-#
-# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
-# getSSH
+echo -e "${green}============ ${blue}Timers ${green}============${reset}"
+getTimers
 
-# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-# getInterestingFiles
+echo -e "${green}============ ${blue}Network ${green}============${reset}"
+getNetwork
 
-# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-# getWritableFiles
+echo -e "${green}============ ${blue}Users ${green}============${reset}"
+getUsers
+
+echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
+getSudoSUID
+
+echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
+getCapabilities
+
+echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
+getShellSessions
+
+echo -e "${green}============ ${blue}SSH ${green}============${reset}"
+getSSH
+
+echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+getInterestingFiles
+
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+getWritableFiles
