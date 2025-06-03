@@ -164,7 +164,7 @@ getDrives () {
 getSoftware () {
   echo -e "Checking for useful software:"
   which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc ctr runc rkt kubectl 2>/dev/null
-
+  (dpkg --list 2>/dev/null | grep "compiler" | grep -v "decompiler\|lib" 2>/dev/null || yum list installed 'gcc*' 2>/dev/null | grep gcc 2>/dev/null|| locate -r "/gcc[0-9\.-]\+$" 2>/dev/null | grep -v "/doc/" | sed -E 's/\s+/\t/g')
 }
 
 getProcesses () {
@@ -201,7 +201,7 @@ getCronjobs () {
     done
     #echo $fpath
     if [ "$scriptcheck" = "f" ]; then
-      echo "Not a vulnerability because $fpath is not a script." # not a script
+      echo -e "${green}Not a vulnerability because $fpath is not a script.${reset}" # not a script
       continue
     fi
     relpathcheck=""
@@ -432,8 +432,8 @@ getpath
 # echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 # getDrives
 
-#echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-#getSoftware
+echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+getSoftware
 
 # echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 # getProcesses
