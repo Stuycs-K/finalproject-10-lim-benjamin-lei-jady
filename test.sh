@@ -149,7 +149,16 @@ getpath () {
 }
 
 getDrives () {
-  applycolor "progress" "work in progress" ${bold}
+  ls /dev 2>/dev/null | grep -i "sd"
+  cat /etc/fstab 2>/dev/null | grep "^# <" | sed -E "s/(\s+)/\t/g"
+  cat /etc/fstab 2>/dev/null | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null | sed -E "s/(\s+)/\t/g"
+  #Check if credentials in fstab
+  echo "Checking for credentials"
+  drivetest=$(grep -E "(user|username|login|pass|password|pw|credentials)[=:]" /etc/fstab /etc/mtab 2>/dev/null)
+  if [ "$drivetest" = "" ]; then
+    echo "None found."
+  fi
+  echo -e $drivetest
 }
 
 getSoftware () {
@@ -423,14 +432,14 @@ getuserinfo
 echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 getDrives
 
-echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-getSoftware
+#echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+#getSoftware
 
 echo -e "${green}============ ${blue}Processes ${green}============${reset}"
 getProcesses
 
-echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-getCronjobs
+#echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+#getCronjobs
 
 # echo -e "${green}============ ${blue}Services ${green}============${reset}"
 # getServices
