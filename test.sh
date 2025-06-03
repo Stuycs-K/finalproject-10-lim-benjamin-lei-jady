@@ -149,7 +149,16 @@ getpath () {
 }
 
 getDrives () {
-  applycolor "progress" "work in progress" ${bold}
+  ls /dev 2>/dev/null | grep -i "sd"
+  cat /etc/fstab 2>/dev/null | grep "^# <" | sed -E "s/(\s+)/\t/g"
+  cat /etc/fstab 2>/dev/null | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null | sed -E "s/(\s+)/\t/g"
+  #Check if credentials in fstab
+  echo "Checking for credentials"
+  drivetest=$(grep -E "(user|username|login|pass|password|pw|credentials)[=:]" /etc/fstab /etc/mtab 2>/dev/null)
+  if [ "$drivetest" = "" ]; then
+    echo "None found."
+  fi
+  echo -e $drivetest
 }
 
 getSoftware () {
@@ -159,7 +168,7 @@ getSoftware () {
 }
 
 getProcesses () {
-  applycolor "progress" "work in progress" ${bold}
+  top -n1
 }
 
 getCronjobs () {
@@ -242,17 +251,17 @@ getNetwork () {
   lst=("/etc/hostname" "/etc/hosts" "/etc/resolv.conf" "/etc/inetd.conf" "/etc/xinetd.conf")
   for fname in "${lst[@]}"
   do
-    echo $fname
-    text=$(cat $fname 2>/dev/null)
+    echo -e "${blue}Contents of ${green}$fname: ${reset}"
+    text=$(cat -e $fname 2>/dev/null)
     if [ ! "$text" = "" ]; then
-      echo -e "${blue}Contents of ${green}$fname: ${reset}"
-      echo $text
+      cat -e $fname 2>/dev/null
     fi
   done
   text=$(dnsdomainname 2>/dev/null)
     if [ ! "$text" = "" ]; then # if there is output then print
       echo "DNS domain name: $text"
     fi
+
   #Interfaces
   echo -e "${green}Interfaces${reset}"
   cat /etc/networks | grep -v "#"
@@ -419,46 +428,45 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-# getpath
+getpath
+# echo -e "${green}============ ${blue}Drives ${green}============${reset}"
+# getDrives
+
+#echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+#getSoftware
+
+# echo -e "${green}============ ${blue}Processes ${green}============${reset}"
+# getProcesses
+
+#echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+#getCronjobs
+
+# echo -e "${green}============ ${blue}Services ${green}============${reset}"
+# getServices
 #
-echo -e "${green}============ ${blue}Drives ${green}============${reset}"
-getDrives
+# echo -e "${green}============ ${blue}Timers ${green}============${reset}"
+# getTimers
 
-echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-getSoftware
-
-echo -e "${green}============ ${blue}Processes ${green}============${reset}"
-getProcesses
-
-echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-getCronjobs
-
-echo -e "${green}============ ${blue}Services ${green}============${reset}"
-getServices
-
-echo -e "${green}============ ${blue}Timers ${green}============${reset}"
-getTimers
-
-echo -e "${green}============ ${blue}Network ${green}============${reset}"
-getNetwork
-
-echo -e "${green}============ ${blue}Users ${green}============${reset}"
-getUsers
-
-echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
-getSudoSUID
-
-echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
-getCapabilities
-
-echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
-getShellSessions
-
-echo -e "${green}============ ${blue}SSH ${green}============${reset}"
-getSSH
-
-echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-getInterestingFiles
-
-echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-getWritableFiles
+# echo -e "${green}============ ${blue}Network ${green}============${reset}"
+# getNetwork
+#
+# echo -e "${green}============ ${blue}Users ${green}============${reset}"
+# getUsers
+#
+# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
+# getSudoSUID
+#
+# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
+# getCapabilities
+#
+# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
+# getShellSessions
+#
+# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
+# getSSH
+#
+# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+# getInterestingFiles
+#
+# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+# getWritableFiles
