@@ -281,7 +281,7 @@ getUsers () {
   for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep --color "root\|sudo\|adm\|$"
 
   formatHeader "users with console:"
-  cat /etc/passwd 2>/dev/null | grep "sh$"
+  cat /etc/passwd 2>/dev/null | grep --color=never"sh$"
   formatHeader "currently logged users:"
   w
   formatHeader "login history (last 10):"
