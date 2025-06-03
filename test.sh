@@ -428,15 +428,15 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-# getpath
-echo -e "${green}============ ${blue}Drives ${green}============${reset}"
-getDrives
+getpath
+# echo -e "${green}============ ${blue}Drives ${green}============${reset}"
+# getDrives
 
 #echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
 #getSoftware
 
-echo -e "${green}============ ${blue}Processes ${green}============${reset}"
-getProcesses
+# echo -e "${green}============ ${blue}Processes ${green}============${reset}"
+# getProcesses
 
 #echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
 #getCronjobs
