@@ -79,37 +79,16 @@ getuserinfo () {
 }
 
 Path=""
-vulnpaths=("/home/user", "/usr/bin/bash")
-ispathinlist () { # arg1 is vulnpaths, arg2 is folder
-  len=${#1}
-  finished="f"
-  for i in {0..$len}
-  do
-    if [ $1[i] = $2 ]; then
-      finished="t"
-      break
-    fi
-  done
-  return $finished
-}
 
 getpath () {
   Pathct=$(echo $PATH | tr ":" "\n" | wc -l)
   Path=$(echo $PATH)
   Pathlen=${#Path}
-  # Path=$(echo $PATH | tr ":" "   ")
-  # echo $Path
-  # separate and test each folder
-  # for folder in Path check if in vulnpaths
-  # loop colon
-  # echo $Pathlen
   currentind=0
   pathschecked=0
   until [ $pathschecked -eq $Pathct ]
   do
-    # echo $pathschecked
     currentfolderlen=0
-    # instead of echo here we grab the folder, then echo -n it; if in vuln paths then change the color too
     go="t"
     while [ $go = "t" ]
     do
@@ -129,14 +108,16 @@ getpath () {
         wrcheck=""
 
         if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser
-          wrcheck=$(checkpermissions $currentfolder)
-          wrcheck=${wrcheck:1:1} # rwx or smth like r--
+          if [ -w "$currentfolder" ]; then
+            wrcheck="w"
+          # wrcheck=${wrcheck:1:1} # rwx or smth like r--
+          fi
         fi
 
         if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
-          currentfolder=$(applycolor $currentfolder $currentfolder "red")
+          currentfolder="${red}$currentfolder${clear}"
         fi
-        echo $currentfolder
+        echo -e $currentfolder
       fi
 
       currentfolderlen=$(($currentfolderlen+1))
@@ -149,13 +130,22 @@ getpath () {
 }
 
 getDrives () {
-  applycolor "progress" "work in progress" ${bold}
+  ls /dev 2>/dev/null | grep -i "sd"
+  cat /etc/fstab 2>/dev/null | grep "^# <" | sed -E "s/(\s+)/\t/g"
+  cat /etc/fstab 2>/dev/null | grep -v "^#" | grep -Pv "\W*\#" 2>/dev/null | sed -E "s/(\s+)/\t/g"
+  #Check if credentials in fstab
+  echo "Checking for credentials"
+  drivetest=$(grep -E "(user|username|login|pass|password|pw|credentials)[=:]" /etc/fstab /etc/mtab 2>/dev/null)
+  if [ "$drivetest" = "" ]; then
+    echo "None found."
+  fi
+  echo -e $drivetest
 }
 
 getSoftware () {
   echo -e "Checking for useful software:"
   which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc ctr runc rkt kubectl 2>/dev/null
-
+  (dpkg --list 2>/dev/null | grep "compiler" | grep -v "decompiler\|lib" 2>/dev/null || yum list installed 'gcc*' 2>/dev/null | grep gcc 2>/dev/null|| locate -r "/gcc[0-9\.-]\+$" 2>/dev/null | grep -v "/doc/" | sed -E 's/\s+/\t/g')
 }
 
 getProcesses () {
@@ -192,7 +182,7 @@ getCronjobs () {
     done
     #echo $fpath
     if [ "$scriptcheck" = "f" ]; then
-      echo "Not a vulnerability because $fpath is not a script." # not a script
+      echo -e "${green}Not a vulnerability because $fpath is not a script.${reset}" # not a script
       continue
     fi
     relpathcheck=""
@@ -281,7 +271,7 @@ getUsers () {
   for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep "root\|sudo\|adm\|$"
 
   formatHeader "users with console:"
-  cat /etc/passwd 2>/dev/null | grep "sh$"
+  cat /etc/passwd 2>/dev/null | grep --color=never"sh$"
   formatHeader "currently logged users:"
   w
   formatHeader "login history (last 10):"
@@ -318,16 +308,22 @@ getSSH () {
 getInterestingFiles () {
   for fname in "/etc/profile" "/etc/profile" "/etc/passwd"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:1:1} == 'w' ]]; then
+    test=""
+    if [ -w "$fname" ]; then
+      test="w"
+    fi
+    if [[ "$test" == 'w' ]]; then
       echo -e "Profile File: ${fname} is ${red}writable${reset}"
     fi
   done
 
   for fname in "/etc/shadow" "/etc/shadow-" "/etc/shadow~" "/etc/gshadow" "/etc/gshadow-" "/etc/master.passwd" "/etc/spwd.db" "/etc/security/opasswd"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    test=""
+    if [ -r "$fname" ]; then
+      test="r"
+    fi
+    if [[ "$test" == 'r' ]]; then
       echo -e "Profile File: ${fname} is ${yellow}readable${yellow}"
     fi
   done
@@ -342,8 +338,11 @@ getInterestingFiles () {
 
   for fname in "/tmp" "/var/tmp" "/var/backups" "/var/mail/" "/var/spool/mail/" "/root"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    rtest=""
+    if [ -r "$fname" ]; then
+      rtest="r"
+    fi
+    if [[ "$rtest" == 'r' ]]; then
       echo -e "Folder: ${fname} is ${yellow}readable${reset}"
     fi
   done
@@ -374,11 +373,18 @@ getInterestingFiles () {
   formatFindResult "$test"
   for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    rtest=""
+    if [ -r "$fname" ]; then
+      rtest="r"
+    fi
+    wtest=""
+    if [ -w "$fname" ]; then
+      wtest="w"
+    fi
+    if [[ "$rtest" == 'r' ]]; then
       echo -e "Shell File: ${fname} is ${red}readable${reset}"
     fi
-    if [[ ${test:1:1} == 'w' ]]; then
+    if [[ "$wtest" == 'w' ]]; then
       echo -e "Shell File: ${fname} is ${red}writable${reset}"
     fi
   done
@@ -404,8 +410,11 @@ getWritableFiles () {
   fi
   echo $test
 
-  test=$(checkpermissions "/etc/sysconfig/network-scripts/")
-  if [[ ${test:1:1} == 'w' ]]; then
+  test=""
+  if [ -w "/etc/sysconfig/network-scripts/" ]; then
+    test="w"
+  fi
+  if [[ "$test" == 'w' ]]; then
     echo -e "${red} : /etc/sysconfig/network-scripts/ is writable${reset}"
   fi
   formatHeader "writable network-scripts:"
@@ -418,7 +427,7 @@ echo -e "${red}ln ${blue}peas${reset}"
 
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
-# getpath
+getpath
 echo -e "${green}============ ${blue}Drives ${green}============${reset}"
 getDrives
 
