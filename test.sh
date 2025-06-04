@@ -246,12 +246,12 @@ getNetwork () {
   #Interfaces
   echo -e "${green}Interfaces${reset}"
   cat /etc/networks | grep -v "#"
-  (ifconfig || ip a)
+  (ifconfig 2>/dev/null || ip a)
 
   #Neighbors
   echo -e "${green}Neighbors${reset}"
-  (arp -e || arp -a)
-  (route || ip n)
+  (arp -e 2>/dev/null || arp -a 2>/dev/null)
+  (route 2>/dev/null || ip n)
 
   #Files used by network services
   echo -e "${green}Files used by network services${reset}"
