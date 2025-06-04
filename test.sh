@@ -282,7 +282,7 @@ getSudoSUID () {
   formatHeader "commands executable with sudo:"
   sudo -l 2>/dev/null
   formatHeader "suid binaries:"
-  formatFindResult $(find / -perm -4000 2>/dev/null)
+  formatFindResult "$(find / -perm -4000 2>/dev/null)"
 }
 
 getCapabilities () {
