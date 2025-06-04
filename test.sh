@@ -32,7 +32,7 @@ formatFindResult () {
   fi
 }
 formatHeader() {
-  echo -e "${bold}>$1${reset}"
+  echo -e "${green}>$1${reset}"
 }
 
 checkpermissions () {
