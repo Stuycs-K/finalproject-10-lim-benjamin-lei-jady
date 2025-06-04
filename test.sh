@@ -220,7 +220,7 @@ getServices () {
   formatFindResult "$(find / -type f -name "*.service" 2>/dev/null)"  | head -n 20
   formatHeader "Writable by Group:"
   formatFindResult "$(find /-type f -perm -g=w -name "*.service" 2>/dev/null)" | head -n 20
-  applycolor "progress" "work in progress" ${bold}
+  # applycolor "progress" "work in progress" ${bold}
 }
 
 getTimers () {
@@ -278,7 +278,7 @@ getNetwork () {
 
 getUsers () {
   formatHeader "All users and their groups"
-  for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep --color "root\|sudo\|adm\|$"
+  for i in $(cut -d":" -f1 /etc/passwd 2>/dev/null);do id $i;done 2>/dev/null | sort | grep "root\|sudo\|adm\|$"
 
   formatHeader "users with console:"
   cat /etc/passwd 2>/dev/null | grep "sh$"
@@ -286,7 +286,6 @@ getUsers () {
   w
   formatHeader "login history (last 10):"
   last | head
-  applycolor "progress" "work in progress" ${bold}
 }
 
 getSudoSUID () {
@@ -309,11 +308,11 @@ getSSH () {
   formatFindResult "$(find /etc/ssh/ ~/.ssh/ -name "*.pub*" 2>/dev/null)"
   echo $(ls -l ~/.ssh/known_hosts 2>/dev/null)
   formatFindResult "$(cat ~/.ssh/known_hosts 2>/dev/null)"
-  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitRootLogin")
-  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^UsePAM")
-  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PasswordAuthentication")
-  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PubkeyAuthentication")
-  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitEmptyPasswords")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitRootLogin" | grep "yes\|$")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^UsePAM" | grep "yes\|$")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PasswordAuthentication" | grep "yes\|$")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PubkeyAuthentication" | grep "yes\|$")
+  echo $(cat /etc/ssh/sshd_config 2>/dev/null | grep -E "^PermitEmptyPasswords" | grep "yes\|$")
 }
 
 getInterestingFiles () {
@@ -432,32 +431,32 @@ getProcesses
 echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
 getCronjobs
 
-# echo -e "${green}============ ${blue}Services ${green}============${reset}"
-# getServices
-#
-# echo -e "${green}============ ${blue}Timers ${green}============${reset}"
-# getTimers
+echo -e "${green}============ ${blue}Services ${green}============${reset}"
+getServices
 
-# echo -e "${green}============ ${blue}Network ${green}============${reset}"
-# getNetwork
-#
-# echo -e "${green}============ ${blue}Users ${green}============${reset}"
-# getUsers
-#
-# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
-# getSudoSUID
-#
-# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
-# getCapabilities
-#
-# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
-# getShellSessions
-#
-# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
-# getSSH
-#
-# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-# getInterestingFiles
-#
-# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-# getWritableFiles
+echo -e "${green}============ ${blue}Timers ${green}============${reset}"
+getTimers
+
+echo -e "${green}============ ${blue}Network ${green}============${reset}"
+getNetwork
+
+echo -e "${green}============ ${blue}Users ${green}============${reset}"
+getUsers
+
+echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
+getSudoSUID
+
+echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
+getCapabilities
+
+echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
+getShellSessions
+
+echo -e "${green}============ ${blue}SSH ${green}============${reset}"
+getSSH
+
+echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+getInterestingFiles
+
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+getWritableFiles
