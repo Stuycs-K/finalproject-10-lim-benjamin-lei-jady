@@ -2,7 +2,7 @@
 
 This document must be updated daily every time you finish a work session.
 
-## Jady Lei CHANGE THE NAME FOOL!
+## Jady Lei
 
 ### 2025-05-14 - It begins...
 Create to-do list for project.
@@ -52,3 +52,10 @@ finish users
 ### 2025-06-01 - happy pride month! pt 2 lock in pt 5
 getServices
 getTimer
+
+### 2025-06-02 - lock in pt 6
+script writing, cleaning up outputs
+
+### 2025-06-03 - lock in pt 7 but more
+video + script writing
+edited the whole video and found out that the audio was really imbalanced

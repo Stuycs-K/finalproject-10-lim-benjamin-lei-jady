@@ -62,4 +62,5 @@ Finished cronjob in first 10m of class and outside of class.
 Tried to integrate processes but too much in the process: gdb scripts, checking for editable/unusual privilege binaries, following maps for all processes to read info...
 Finished drives, small screen of process info 
 
-### 2025-05-19 - Pair programming on getting system info
+### 2025-06-03 - Miscellaneous edits, wrote presentation.md
+Script writing, video filming, finishing readme and presentation and stuff for the repo
