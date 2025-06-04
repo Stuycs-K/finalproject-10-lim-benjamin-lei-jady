@@ -79,37 +79,16 @@ getuserinfo () {
 }
 
 Path=""
-vulnpaths=("/home/user", "/usr/bin/bash")
-ispathinlist () { # arg1 is vulnpaths, arg2 is folder
-  len=${#1}
-  finished="f"
-  for i in {0..$len}
-  do
-    if [ $1[i] = $2 ]; then
-      finished="t"
-      break
-    fi
-  done
-  return $finished
-}
 
 getpath () {
   Pathct=$(echo $PATH | tr ":" "\n" | wc -l)
   Path=$(echo $PATH)
   Pathlen=${#Path}
-  # Path=$(echo $PATH | tr ":" "   ")
-  # echo $Path
-  # separate and test each folder
-  # for folder in Path check if in vulnpaths
-  # loop colon
-  # echo $Pathlen
   currentind=0
   pathschecked=0
   until [ $pathschecked -eq $Pathct ]
   do
-    # echo $pathschecked
     currentfolderlen=0
-    # instead of echo here we grab the folder, then echo -n it; if in vuln paths then change the color too
     go="t"
     while [ $go = "t" ]
     do
@@ -129,14 +108,16 @@ getpath () {
         wrcheck=""
 
         if [ ! "$ocheck" = "" ]; then # if not empty then it matched rootuser
-          wrcheck=$(checkpermissions $currentfolder)
-          wrcheck=${wrcheck:1:1} # rwx or smth like r--
+          if [ -w "$currentfolder" ]; then
+            wrcheck="w"
+          # wrcheck=${wrcheck:1:1} # rwx or smth like r--
+          fi
         fi
 
         if [ ! "$ocheck" = "" ] && [ "$wrcheck" = "w" ]; then
-          currentfolder=$(applycolor $currentfolder $currentfolder "red")
+          currentfolder="${red}$currentfolder${clear}"
         fi
-        echo $currentfolder
+        echo -e $currentfolder
       fi
 
       currentfolderlen=$(($currentfolderlen+1))
@@ -328,16 +309,22 @@ getSSH () {
 getInterestingFiles () {
   for fname in "/etc/profile" "/etc/profile" "/etc/passwd"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:1:1} == 'w' ]]; then
+    test=""
+    if [ -w "$fname" ]; then
+      test="w"
+    fi
+    if [[ "$test" == 'w' ]]; then
       echo -e "Profile File: ${fname} is ${red}writable${reset}"
     fi
   done
 
   for fname in "/etc/shadow" "/etc/shadow-" "/etc/shadow~" "/etc/gshadow" "/etc/gshadow-" "/etc/master.passwd" "/etc/spwd.db" "/etc/security/opasswd"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    test=""
+    if [ -r "$fname" ]; then
+      test="r"
+    fi
+    if [[ "$test" == 'r' ]]; then
       echo -e "Profile File: ${fname} is ${yellow}readable${yellow}"
     fi
   done
@@ -352,8 +339,11 @@ getInterestingFiles () {
 
   for fname in "/tmp" "/var/tmp" "/var/backups" "/var/mail/" "/var/spool/mail/" "/root"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    rtest=""
+    if [ -r "$fname" ]; then
+      rtest="r"
+    fi
+    if [[ "$rtest" == 'r' ]]; then
       echo -e "Folder: ${fname} is ${yellow}readable${reset}"
     fi
   done
@@ -384,11 +374,18 @@ getInterestingFiles () {
   formatFindResult "$test"
   for fname in "~/.bash_profile" "~/.bash_login" "~/.profile" "~/.bashrc" "~/.bash_logout" "~/.zlogin" "~/.zshrc"
   do
-    test=$(checkpermissions "$fname")
-    if [[ ${test:0:1} == 'r' ]]; then
+    rtest=""
+    if [ -r "$fname" ]; then
+      rtest="r"
+    fi
+    wtest=""
+    if [ -w "$fname" ]; then
+      wtest="w"
+    fi
+    if [[ "$rtest" == 'r' ]]; then
       echo -e "Shell File: ${fname} is ${red}readable${reset}"
     fi
-    if [[ ${test:1:1} == 'w' ]]; then
+    if [[ "$wtest" == 'w' ]]; then
       echo -e "Shell File: ${fname} is ${red}writable${reset}"
     fi
   done
@@ -414,8 +411,11 @@ getWritableFiles () {
   fi
   echo $test
 
-  test=$(checkpermissions "/etc/sysconfig/network-scripts/")
-  if [[ ${test:1:1} == 'w' ]]; then
+  test=""
+  if [ -w "/etc/sysconfig/network-scripts/" ]; then
+    test="w"
+  fi
+  if [[ "$test" == 'w' ]]; then
     echo -e "${red} : /etc/sysconfig/network-scripts/ is writable${reset}"
   fi
   formatHeader "writable network-scripts:"
@@ -429,44 +429,44 @@ echo -e "${red}ln ${blue}peas${reset}"
 echo -e "${green}============ ${blue}System Information ${green}============${reset}"
 getuserinfo
 getpath
-# echo -e "${green}============ ${blue}Drives ${green}============${reset}"
-# getDrives
+echo -e "${green}============ ${blue}Drives ${green}============${reset}"
+getDrives
 
-#echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
-#getSoftware
+echo -e "${green}============ ${blue}Installed Software ${green}============${reset}"
+getSoftware
 
-# echo -e "${green}============ ${blue}Processes ${green}============${reset}"
-# getProcesses
+echo -e "${green}============ ${blue}Processes ${green}============${reset}"
+getProcesses
 
-#echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
-#getCronjobs
+echo -e "${green}============ ${blue}Scheduled/Cron jobs ${green}============${reset}"
+getCronjobs
 
-# echo -e "${green}============ ${blue}Services ${green}============${reset}"
-# getServices
-#
-# echo -e "${green}============ ${blue}Timers ${green}============${reset}"
-# getTimers
+echo -e "${green}============ ${blue}Services ${green}============${reset}"
+getServices
 
-# echo -e "${green}============ ${blue}Network ${green}============${reset}"
-# getNetwork
-#
-# echo -e "${green}============ ${blue}Users ${green}============${reset}"
-# getUsers
-#
-# echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
-# getSudoSUID
-#
-# echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
-# getCapabilities
-#
-# echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
-# getShellSessions
-#
-# echo -e "${green}============ ${blue}SSH ${green}============${reset}"
-# getSSH
-#
-# echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
-# getInterestingFiles
-#
-# echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
-# getWritableFiles
+echo -e "${green}============ ${blue}Timers ${green}============${reset}"
+getTimers
+
+echo -e "${green}============ ${blue}Network ${green}============${reset}"
+getNetwork
+
+echo -e "${green}============ ${blue}Users ${green}============${reset}"
+getUsers
+
+echo -e "${green}============ ${blue}SUDO and SUID commands${green}============${reset}"
+getSudoSUID
+
+echo -e "${green}============ ${blue}Capabilities ${green}============${reset}"
+getCapabilities
+
+echo -e "${green}============ ${blue}Open Shell Sessions ${green}============${reset}"
+getShellSessions
+
+echo -e "${green}============ ${blue}SSH ${green}============${reset}"
+getSSH
+
+echo -e "${green}============ ${blue}Interesting Files ${green}============${reset}"
+getInterestingFiles
+
+echo -e "${green}============ ${blue}Writable Files ${green}============${reset}"
+getWritableFiles
