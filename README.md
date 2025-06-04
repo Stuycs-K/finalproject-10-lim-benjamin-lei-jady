@@ -17,9 +17,10 @@ If desired, specific modules can be omitted by commenting out sections (adding "
 
 ### Our Video  
 https://drive.google.com/file/d/1DhRRb1e6d1Tfr-gi9jXj1mteLb2obuAU/view?usp=sharing
+Notes: I, Jady Lei, didn't remember cameras until 90 minutes of editing had already passed. I'm not refilming and editing the video. The volume may be a bit low, but I put in effort to balance the volume for most of the video. It is also a little low quality, but all the text is still legible.
 
 ### Resources/ References:
-[checklist] (https://book.hacktricks.wiki/en/linux-hardening/linux-privilege-escalation-checklist.html)  
+[checklist](https://book.hacktricks.wiki/en/linux-hardening/linux-privilege-escalation-checklist.html)  
 [running linpeas video](https://asciinema.org/a/309566)  
 [bash cheat sheet](https://learnxinyminutes.com/bash/)  
 Used various references from the internet for bash syntax.
